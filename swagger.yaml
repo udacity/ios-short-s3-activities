@@ -2,8 +2,8 @@ swagger: '2.0'
 
 info:
   version: '1.0.0'
-  title: 'Activities Microservice'
-  description: 'This microservice is used to create, retrieve, update, and delete activities.'
+  title: 'Activities'
+  description: 'Microservice for creating, retrieving, updating, and deleting activities.'
   contact:
     name: Jarrod Parkes
     email: jarrod@udacity.com
