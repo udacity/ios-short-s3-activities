@@ -1,2 +1,2 @@
-# chill-activities
-Activities microservice for Chill app.
+# activities
+Activities microservice.
