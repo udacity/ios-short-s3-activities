@@ -10,8 +10,7 @@ info:
     url: http://jarrodparkes.com
   license:
     name: MIT License
-    url: https://github.com/udacity/ios-short-s3-activities/blob/master/LICENSE
-
+    
 schemes:
   - https
 consumes:
