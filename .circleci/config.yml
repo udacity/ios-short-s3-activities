@@ -1,10 +1,11 @@
 version: 2
+
 jobs:
   build:
     working_directory: ~/activities
     
     docker:
-      image: ibmcom/kitura-ubuntu
+      - image: ibmcom/kitura-ubuntu
     
     steps:
       - checkout
