@@ -14,3 +14,6 @@ test_docker:
 
 build_docker:
 	docker run -it --rm -v $(shell pwd):/src -w /src ${DOCKER_IMAGE} /bin/bash -c 'swift build --build-path=/.build'
+
+docker_dev:
+	docker run -it --rm -v $(shell pwd):/src -w /src ${DOCKER_IMAGE} /bin/bash
