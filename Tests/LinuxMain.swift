@@ -1,8 +1,8 @@
 import XCTest
 
-@testable import KituraStarterTestSuite
+@testable import ActivitiesTests
 
 XCTMain([
-  testCase(JSONControllerTests.allTests),
+  testCase(SomeTests.allTests),
   ]
 )

@@ -5,7 +5,8 @@ import PackageDescription
 let package = Package(
     name: "activities",
     targets: [
-        Target(name: "ActivitiesService")
+        Target(name: "ActivitiesService"),
+        Target(name: "ActivitiesTests")
     ],
 
     dependencies: [

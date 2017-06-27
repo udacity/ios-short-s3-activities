@@ -11,7 +11,7 @@ public class SomeTests: XCTestCase {
 
 #if os(Linux)
 extension SomeTests {
-  static var allTests: [(String, (JSONControllerTests) -> () throws -> Void)] {
+  static var allTests: [(String, (SomeTests) -> () throws -> Void)] {
     return [
       ("testSomething", testSomething)
     ]
