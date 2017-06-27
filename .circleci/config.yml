@@ -18,7 +18,7 @@ jobs:
           command: make build
       
       - persist_to_workspace:
-          root: /tmp
+          root: /tmp/
           paths:
             - activities
 
@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - attach_workspace:
-          at: /tmp/activities
+          at: /tmp
 
       - run: 
           name: Unit Tests
