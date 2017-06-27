@@ -5,7 +5,6 @@ defaults: &defaults
   docker:
     - image: ibmcom/kitura-ubuntu
 
-
 jobs:
   build:
     <<: *defaults
@@ -31,8 +30,18 @@ jobs:
 
       - run: 
           name: Unit Tests
-          command: make test
+          command: make unit_test
 
+  functional_test:
+    <<: *defaults
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - run: 
+          name: Functional Tests
+          command: make functional_test
 
 workflows:
   version: 2
@@ -40,6 +49,9 @@ workflows:
     jobs:
       - build
       - unit_test:
+          requires:
+            - build
+      - functional_test:
           requires:
             - build
 

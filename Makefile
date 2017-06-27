@@ -6,8 +6,11 @@ build:
 run:
 	./.build/debug/activities
 
-test:
-	swift test
+unit_test:
+	swift test -s ActivitiesTests.SomeTests
+
+functional_test:
+	swift test -s FunctionalTests.FunctionalTests
 
 test_docker:
 	docker run -v $(shell pwd):/src -w /src ${DOCKER_IMAGE} /bin/bash -c 'swift test --build-path=/.build'
