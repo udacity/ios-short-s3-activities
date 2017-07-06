@@ -19,6 +19,6 @@ let package = Package(
 
         // Test imports
         .Package(url: "https://github.com/nicholasjackson/kitura-http-test.git", majorVersion:0, minor: 2),
-        .Package(url: "../Swift-Kuery-Mock", majorVersion:0, minor: 1)
+        .Package(url: "https://github.com/nicholasjackson/Swift-Kuery-Mock.git", majorVersion:0, minor: 1)
     ]
 )

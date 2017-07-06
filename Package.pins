@@ -58,7 +58,7 @@
     {
       "package": "Swift-Kuery-Mock",
       "reason": null,
-      "repositoryURL": "/Users/nicj/Developer/swift/Swift-Kuery-Mock",
+      "repositoryURL": "https://github.com/nicholasjackson/Swift-Kuery-Mock.git",
       "version": "0.1.0"
     },
     {
