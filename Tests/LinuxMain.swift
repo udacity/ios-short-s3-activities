@@ -4,7 +4,7 @@ import XCTest
 @testable import FunctionalTests
 
 XCTMain([
-  testCase(SomeTests.allTests),
+  testCase(HandlersTests.allTests),
   testCase(FunctionalTests.allTests),
   ]
 )
