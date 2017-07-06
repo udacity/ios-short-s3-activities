@@ -48,6 +48,15 @@ public class HandlersTests: XCTestCase {
 
         XCTAssertEqual(HTTPStatusCode.badRequest, responseRecorder?.statusCode)
     }
+
+    func testQueriesDataBaseForActivities() throws {
+        request!.method = "GET"
+        routerRequest = RouterRequest(request: request!)
+
+        try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
+
+        XCTAssertEqual(1, connection!.calls.details["execute"]?.count)
+    }
 }
 
 #if os(Linux)

@@ -29,7 +29,7 @@
       "package": "Kitura-net",
       "reason": null,
       "repositoryURL": "https://github.com/IBM-Swift/Kitura-net.git",
-      "version": "1.7.12"
+      "version": "1.7.13"
     },
     {
       "package": "KituraHTTPTest",
@@ -59,7 +59,7 @@
       "package": "Swift-Kuery-Mock",
       "reason": null,
       "repositoryURL": "https://github.com/nicholasjackson/Swift-Kuery-Mock.git",
-      "version": "0.1.0"
+      "version": "0.1.2"
     },
     {
       "package": "SwiftKuery",
