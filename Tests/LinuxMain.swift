@@ -5,6 +5,6 @@ import XCTest
 
 XCTMain([
   testCase(HandlersTests.allTests),
-  testCase(FunctionalTests.allTests),
+  testCase(FunctionalTests.allTests)
   ]
 )

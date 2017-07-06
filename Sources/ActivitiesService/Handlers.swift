@@ -19,7 +19,14 @@ public class Handlers {
             response: RouterResponse,
             next: @escaping () -> Void) throws {
 
+        if request.method != RouterMethod.get {
+            try response.status(.badRequest).end()
+            return
+        }
+
+
         Log.debug("GET - /activities route handler...")
 
+        try response.status(.OK).end()
     }
 }

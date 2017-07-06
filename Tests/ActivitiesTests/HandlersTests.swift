@@ -36,12 +36,18 @@ public class HandlersTests: XCTestCase {
 
         connection = MockSQLConnection()
         connectionPool = MockSQLConnection.createPool(connection!)
+
+        handlers = Handlers(connectionPool: connectionPool!)
     }
 
-    func testSomething() {
-        XCTAssertEqual(200, 200)
-    }
+    func testHTTPVerbsOtherThanGetReturnBadResponse() throws {
+        request!.method = "POST"
+        routerRequest = RouterRequest(request: request!)
 
+        try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
+
+        XCTAssertEqual(HTTPStatusCode.badRequest, responseRecorder?.statusCode)
+    }
 }
 
 #if os(Linux)
