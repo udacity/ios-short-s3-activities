@@ -28,7 +28,7 @@
     {
       "package": "KituraHTTPTest",
       "reason": null,
-      "repositoryURL": "/Users/nicj/Developer/swift/kitura-http-test",
+      "repositoryURL": "https://github.com/nicholasjackson/kitura-http-test.git",
       "version": "0.2.0"
     },
     {
