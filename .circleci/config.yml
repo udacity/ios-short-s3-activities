@@ -16,7 +16,7 @@ jobs:
           name: Install Dependencies
           command: |
                   sudo apt-get update
-                  sudo apt-get install -y mysql-server libmysqlclient-dev
+                  sudo apt-get install -y libmysqlclient-dev
 
       - run: 
           name: Build Application
