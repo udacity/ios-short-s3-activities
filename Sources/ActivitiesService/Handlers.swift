@@ -2,8 +2,15 @@ import Foundation
 import Kitura
 import SwiftyJSON
 import LoggerAPI
+import SwiftKuery
 
 public class Handlers {
+    var connectionPool: ConnectionPool
+
+    public init(connectionPool: ConnectionPool) {
+       self.connectionPool = connectionPool
+    }
+
     /**
      * Handler for getting an application/json response.
      */

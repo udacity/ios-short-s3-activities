@@ -1,9 +1,16 @@
+import Foundation
 import Kitura
+import SwiftKuery
+import SwiftKueryMySQL
+import ActivitiesService
 
 // Create a new router
 let router = Router()
 
-let handlers = Handlers()
+var poolOptions = ConnectionPoolOptions(initialCapacity: 1)
+let connectionPool =  MySQLConnection.createPool(url: URL(string: "")!, poolOptions: poolOptions)
+
+let handlers = Handlers(connectionPool: connectionPool)
 
 // Handle HTTP GET requests to /
 router.get("/activities", handler: handlers.getActivities)

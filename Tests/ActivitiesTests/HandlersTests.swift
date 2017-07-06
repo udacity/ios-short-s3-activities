@@ -3,7 +3,11 @@ import XCTest
 
 @testable import KituraHTTPTest
 @testable import Kitura
+@testable import ActivitiesService
+@testable import SwiftKueryMock
+
 import KituraNet
+import SwiftKuery
 
 public class HandlersTests: XCTestCase {
 
@@ -12,6 +16,10 @@ public class HandlersTests: XCTestCase {
 
     var routerRequest: RouterRequest?
     var routerResponse: RouterResponse?
+
+    var handlers: Handlers?
+    var connection: MockSQLConnection?
+    var connectionPool: ConnectionPool?
 
     public override func setUp() {
         request = Request()
@@ -25,10 +33,13 @@ public class HandlersTests: XCTestCase {
                 response: responseRecorder!,
                 routerStack: routerStack,
                 request: routerRequest!)
+
+        connection = MockSQLConnection()
+        connectionPool = MockSQLConnection.createPool(connection!)
     }
 
     func testSomething() {
-        XCTAssertEqual(200,200)
+        XCTAssertEqual(200, 200)
     }
 
 }
