@@ -33,6 +33,12 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp
+      
+      - run:
+          name: Install Dependencies
+          command: |
+                  sudo apt-get update
+                  sudo apt-get install -y libmysqlclient-dev
 
       - run: 
           name: Unit Tests
@@ -44,6 +50,12 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp
+
+      - run:
+          name: Install Dependencies
+          command: |
+                  sudo apt-get update
+                  sudo apt-get install -y libmysqlclient-dev
 
       - run: 
           name: Functional Tests
