@@ -24,6 +24,13 @@ public class Handlers {
             return
         }
 
+        if let connection = connectionPool.getConnection() {
+           connection.execute("SELECT FROM") {
+               (result: QueryResult) in
+               Log.debug("Got result")
+           }
+        }
+
 
         Log.debug("GET - /activities route handler...")
 

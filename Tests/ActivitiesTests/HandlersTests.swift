@@ -63,7 +63,8 @@ public class HandlersTests: XCTestCase {
 extension HandlersTests {
     static var allTests: [(String, (HandlersTests) -> () throws -> Void)] {
         return [
-                ("testSomething", testSomething)
+            ("testHTTPVerbsOtherThanGetReturnBadResponse", testHTTPVerbsOtherThanGetReturnBadResponse),
+            ("testQueriesDataBaseForActivities", testQueriesDataBaseForActivities)
         ]
     }
 }
