@@ -57,6 +57,23 @@ public class HandlersTests: XCTestCase {
 
         XCTAssertEqual(1, connection!.calls.details["execute"]?.count)
     }
+
+    func testReturnsActivitiesOnSuccessfulQuery() throws {
+        request!.method = "GET"
+        routerRequest = RouterRequest(request: request!)
+        connection!.calls.on(method: "execute", withArguments: [MatchAny(), MatchAny()]) {
+            arguments in
+            print("call")
+
+            let callback = arguments![1] as! ((QueryResult) -> Void)
+            callback(.resultSet(ResultSet(TestResultFetcher(numberOfRows: 1))))
+        }
+
+        try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
+
+        let body = responseRecorder!.jsonBody()
+        XCTAssertEqual("ok", body["ok"])
+    }
 }
 
 #if os(Linux)
@@ -64,7 +81,8 @@ extension HandlersTests {
     static var allTests: [(String, (HandlersTests) -> () throws -> Void)] {
         return [
             ("testHTTPVerbsOtherThanGetReturnBadResponse", testHTTPVerbsOtherThanGetReturnBadResponse),
-            ("testQueriesDataBaseForActivities", testQueriesDataBaseForActivities)
+            ("testQueriesDataBaseForActivities", testQueriesDataBaseForActivities),
+            ("testReturnsActivitiesOnSuccessfulQuery", testReturnsActivitiesOnSuccessfulQuery)
         ]
     }
 }

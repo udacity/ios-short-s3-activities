@@ -25,15 +25,22 @@ public class Handlers {
         }
 
         if let connection = connectionPool.getConnection() {
-           connection.execute("SELECT FROM") {
+           connection.execute("SELECT * FROM activities") {
                (result: QueryResult) in
-               Log.debug("Got result")
+               print("Got result")
+
+               self.returnResult(result, response: response)
            }
         }
 
-
+        try response.send(json: JSON(["ok":"ok"])).status(.OK).end()
         Log.debug("GET - /activities route handler...")
+    }
 
-        try response.status(.OK).end()
+    private func returnResult(_ result: QueryResult, response: RouterResponse) {
+        do {
+            var json = JSON(["ok": "ok"])
+            try response.send(json: json).status(.OK).end()
+        } catch {}
     }
 }
