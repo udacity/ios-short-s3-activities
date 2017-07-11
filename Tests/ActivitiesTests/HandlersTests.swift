@@ -72,6 +72,24 @@ public class HandlersTests: XCTestCase {
 
         let body = responseRecorder!.jsonBody()
         XCTAssertEqual("abc123", body[0]["id"])
+        XCTAssertEqual(HTTPStatusCode.OK,responseRecorder!.statusCode)
+    }
+
+    func testReturnsInternalServerErrorOnFailedQuery() throws {
+        request!.method = "GET"
+        routerRequest = RouterRequest(request: request!)
+        connection!.calls.on(method: "execute", withArguments: [MatchAny(), MatchAny()]) {
+            arguments in
+
+            let callback = arguments![1] as! ((QueryResult) -> Void)
+            callback(.error(QueryError.noResult("Error in query execution.")))
+        }
+
+        try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
+
+        let body = responseRecorder!.body()
+        XCTAssertEqual("", body)
+        XCTAssertEqual(HTTPStatusCode.internalServerError,responseRecorder!.statusCode)
     }
 }
 
@@ -81,8 +99,9 @@ extension HandlersTests {
         return [
             ("testHTTPVerbsOtherThanGetReturnBadResponse", testHTTPVerbsOtherThanGetReturnBadResponse),
             ("testQueriesDataBaseForActivities", testQueriesDataBaseForActivities),
-            ("testReturnsActivitiesOnSuccessfulQuery", testReturnsActivitiesOnSuccessfulQuery)
-        ]
+            ("testReturnsActivitiesOnSuccessfulQuery", testReturnsActivitiesOnSuccessfulQuery),
+            ("testReturnsInternalServerErrorOnFailedQuery", testReturnsInternalServerErrorOnFailedQuery)
+       ]
     }
 }
 #endif

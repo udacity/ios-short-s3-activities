@@ -37,6 +37,11 @@ public class Handlers {
 
     private func returnResult(_ result: QueryResult, response: RouterResponse) {
         do {
+            if let error = result.asError {
+                try response.status(.internalServerError).end()
+                return
+            }
+
             let activities = result.toActivities()
             try response.send(json: activities.toJSON()).status(.OK).end()
         } catch {}
