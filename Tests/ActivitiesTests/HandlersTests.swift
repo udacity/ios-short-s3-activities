@@ -63,7 +63,6 @@ public class HandlersTests: XCTestCase {
         routerRequest = RouterRequest(request: request!)
         connection!.calls.on(method: "execute", withArguments: [MatchAny(), MatchAny()]) {
             arguments in
-            print("call")
 
             let callback = arguments![1] as! ((QueryResult) -> Void)
             callback(.resultSet(ResultSet(TestResultFetcher(numberOfRows: 1))))
@@ -72,7 +71,7 @@ public class HandlersTests: XCTestCase {
         try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
 
         let body = responseRecorder!.jsonBody()
-        XCTAssertEqual("ok", body["ok"])
+        XCTAssertEqual("abc123", body[0]["id"])
     }
 }
 
