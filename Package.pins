@@ -65,7 +65,7 @@
       "package": "SwiftKueryMock",
       "reason": null,
       "repositoryURL": "https://github.com/nicholasjackson/Swift-Kuery-Mock.git",
-      "version": "0.1.4"
+      "version": "0.1.5"
     },
     {
       "package": "SwiftKueryMySQL",
