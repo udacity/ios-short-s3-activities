@@ -1,13 +1,12 @@
 import Foundation
 import XCTest
+import KituraNet
+import SwiftKuery
 
 @testable import KituraHTTPTest
 @testable import Kitura
 @testable import ActivitiesService
 @testable import SwiftKueryMock
-
-import KituraNet
-import SwiftKuery
 
 public class HandlersTests: XCTestCase {
 
