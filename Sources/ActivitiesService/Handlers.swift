@@ -22,8 +22,7 @@ public class Handlers {
         }
 
         if let connection = connectionPool.getConnection() {
-           connection.execute("SELECT * FROM activities") {
-               (result: QueryResult) in
+           connection.execute("SELECT * FROM activities") { (result: QueryResult) in
                self.returnResult(result, response: response)
            }
         }
