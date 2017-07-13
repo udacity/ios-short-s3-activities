@@ -1,30 +1,34 @@
 import Foundation
 import SwiftyJSON
 
-public struct Activity: JSONAble {
+// MARK: - Activity
+
+public struct Activity {
     public var id: String?
     public var name: String?
     public var description: String?
     public var maxParticipants: Int?
 }
 
-public extension Activity {
-    public func toJSON() -> JSON{
+// MARK: - Activity: JSONAble
+
+extension Activity: JSONAble {
+    public func toJSON() -> JSON {
         var dict = [String: Any]()
 
-        if let id = self.id as? String {
+        if let id = self.id {
             dict["id"] = id
         }
 
-        if let name = self.name as? String {
+        if let name = self.name {
             dict["name"] = name
         }
 
-        if let description = self.description as? String {
+        if let description = self.description {
             dict["description"] = description
         }
 
-        if let mp = maxParticipants as? Int {
+        if let mp = maxParticipants {
             dict["maxParticpants"] = mp
         }
 

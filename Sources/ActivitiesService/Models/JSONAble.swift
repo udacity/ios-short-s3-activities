@@ -1,11 +1,15 @@
 import Foundation
 import SwiftyJSON
 
+// MARK: - JSONAble
+
 public protocol JSONAble {
     func toJSON() -> JSON
 }
 
-public extension Array where Element : JSONAble {
+// MARK: - Array (Element: JSONAble)
+
+public extension Array where Element: JSONAble {
     public func toJSON() -> JSON {
         var json = [JSON]()
 

@@ -14,10 +14,7 @@ public class Handlers {
     /**
      * Handler for getting an application/json response.
      */
-    public func getActivities(
-            request: RouterRequest,
-            response: RouterResponse,
-            next: @escaping () -> Void) throws {
+    public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         if request.method != RouterMethod.get {
             try response.status(.badRequest).end()
