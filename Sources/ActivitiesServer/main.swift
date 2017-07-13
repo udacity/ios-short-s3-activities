@@ -7,8 +7,12 @@ import ActivitiesService
 // Create a new router
 let router = Router()
 
+// MYSQL_CONNECTION = mysql://\(user):\(password)@\(host):\(port)/\(database)
+
+let connectionString = ProcessInfo.processInfo.environment["MYSQL_CONNECTION"]
 var poolOptions = ConnectionPoolOptions(initialCapacity: 1)
-let connectionPool =  MySQLConnection.createPool(url: URL(string: "")!, poolOptions: poolOptions)
+let connectionPool =  MySQLConnection.createPool(url: URL(string: connectionString)!, poolOptions: poolOptions)
+
 let handlers = Handlers(connectionPool: connectionPool)
 
 // Handle HTTP GET requests to /
