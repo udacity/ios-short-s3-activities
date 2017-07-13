@@ -67,9 +67,10 @@ public class HandlersTests: XCTestCase {
     }
 
     func testReturnsActivitiesOnSuccessfulQuery() throws {
+        // setup
         request!.method = "GET"
         routerRequest = RouterRequest(request: request!)
-
+        // setup expectation on the mock
         connection!.calls.on(method: "execute", withArguments: [MatchAny(), MatchAny()]) {
             arguments in
 
@@ -77,8 +78,10 @@ public class HandlersTests: XCTestCase {
             callback(.resultSet(ResultSet(TestResultFetcher(numberOfRows: 1))))
         }
 
+        // execute
         try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
 
+        // assert
         let body = responseRecorder!.jsonBody()
         XCTAssertEqual("abc123", body[0]["id"])
         XCTAssertEqual(HTTPStatusCode.OK,responseRecorder!.statusCode)
@@ -100,6 +103,17 @@ public class HandlersTests: XCTestCase {
         XCTAssertEqual("", body)
         XCTAssertEqual(HTTPStatusCode.internalServerError,responseRecorder!.statusCode)
     }
+
+    func testReturnsNotFoundWhenNoActivitiesFromQuery() throws {
+        request!.method = "GET"
+        routerRequest = RouterRequest(request: request!)
+
+        // because we are not setting the expectation on the mock the callback
+        // will never get called and query result will be nil
+        try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
+
+        XCTAssertEqual(HTTPStatusCode.notFound,responseRecorder!.statusCode)
+    }
 }
 
 #if os(Linux)
@@ -109,7 +123,8 @@ extension HandlersTests {
             ("testHTTPVerbsOtherThanGetReturnBadResponse", testHTTPVerbsOtherThanGetReturnBadResponse),
             ("testQueriesDataBaseForActivities", testQueriesDataBaseForActivities),
             ("testReturnsActivitiesOnSuccessfulQuery", testReturnsActivitiesOnSuccessfulQuery),
-            ("testReturnsInternalServerErrorOnFailedQuery", testReturnsInternalServerErrorOnFailedQuery)
+            ("testReturnsInternalServerErrorOnFailedQuery", testReturnsInternalServerErrorOnFailedQuery),
+            ("testReturnsNonFoundWhenNoActivitiesFromQuery", testReturnsNotFoundWhenNoActiviesFromQuery)
        ]
     }
 }

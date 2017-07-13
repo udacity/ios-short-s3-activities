@@ -21,24 +21,36 @@ public class Handlers {
             return
         }
 
-        if let connection = connectionPool.getConnection() {
-           connection.execute("SELECT * FROM activities") { (result: QueryResult) in
-               self.returnResult(result, response: response)
-           }
-        }
+        let result = getActivities()
+        try returnResult(result, response: response)
 
         Log.debug("GET - /activities route handler...")
     }
 
-    private func returnResult(_ result: QueryResult, response: RouterResponse) {
-        do {
-            if let error = result.asError {
-                try response.status(.internalServerError).end()
-                return
-            }
+    private func getActivities() -> QueryResult? {
+        var returnResult:QueryResult? = nil
 
-            let activities = result.toActivities()
-            try response.send(json: activities.toJSON()).status(.OK).end()
-        } catch {}
+        if let connection = connectionPool.getConnection() {
+            connection.execute("SELECT * FROM activities") {
+                (result: QueryResult) in
+
+                returnResult = result
+            }
+        }
+
+        return returnResult
+    }
+
+    private func returnResult(_ result: QueryResult?, response: RouterResponse) throws {
+        if let error = result?.asError {
+            try response.status(.internalServerError).end()
+            return
+        }
+
+        if let activities = result?.toActivities() {
+            try response.send (json: activities.toJSON ()).status (.OK).end ()
+        } else {
+            try response.status(.notFound).end()
+        }
     }
 }
