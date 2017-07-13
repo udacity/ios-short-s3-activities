@@ -8,17 +8,25 @@ import SwiftKuery
 @testable import ActivitiesService
 @testable import SwiftKueryMock
 
+/*
+  HandlersTests verify if the `Handlers` object functions correctly.
+*/
 public class HandlersTests: XCTestCase {
 
-    var request: Request?
-    var responseRecorder: ResponseRecorder?
+    // MARK: from Kitura
+    var routerRequest: RouterRequest? // Request to server
+    var routerResponse: RouterResponse? // Response from server
 
-    var routerRequest: RouterRequest?
-    var routerResponse: RouterResponse?
+    // MARK: from ActivitiesService
+    var handlers: Handlers? // Request handler
 
-    var handlers: Handlers?
+    // MARK: from SwiftKueryMock (Nic Jackson)
     var connection: MockSQLConnection?
     var connectionPool: ConnectionPool?
+
+    // MARK: from KituraHTTPTest (Nic Jackson)
+    var request: Request? // A stubbed request
+    var responseRecorder: ResponseRecorder? // A stubbed response that is "captured" instead of being output to the requester and stored in an internal buffer; this enables us to test responses
 
     public override func setUp() {
         request = Request()
@@ -43,6 +51,7 @@ public class HandlersTests: XCTestCase {
         request!.method = "POST"
         routerRequest = RouterRequest(request: request!)
 
+        // If method is unsupported, then routerResponse's status will be set
         try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
 
         XCTAssertEqual(HTTPStatusCode.badRequest, responseRecorder?.statusCode)
@@ -60,6 +69,7 @@ public class HandlersTests: XCTestCase {
     func testReturnsActivitiesOnSuccessfulQuery() throws {
         request!.method = "GET"
         routerRequest = RouterRequest(request: request!)
+
         connection!.calls.on(method: "execute", withArguments: [MatchAny(), MatchAny()]) {
             arguments in
 

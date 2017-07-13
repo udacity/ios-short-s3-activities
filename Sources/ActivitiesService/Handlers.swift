@@ -14,10 +14,7 @@ public class Handlers {
     /**
      * Handler for getting an application/json response.
      */
-    public func getActivities(
-            request: RouterRequest,
-            response: RouterResponse,
-            next: @escaping () -> Void) throws {
+    public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         if request.method != RouterMethod.get {
             try response.status(.badRequest).end()
@@ -27,7 +24,6 @@ public class Handlers {
         if let connection = connectionPool.getConnection() {
            connection.execute("SELECT * FROM activities") {
                (result: QueryResult) in
-
                self.returnResult(result, response: response)
            }
         }

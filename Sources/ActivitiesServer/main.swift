@@ -9,7 +9,6 @@ let router = Router()
 
 var poolOptions = ConnectionPoolOptions(initialCapacity: 1)
 let connectionPool =  MySQLConnection.createPool(url: URL(string: "")!, poolOptions: poolOptions)
-
 let handlers = Handlers(connectionPool: connectionPool)
 
 // Handle HTTP GET requests to /
