@@ -130,13 +130,18 @@ definitions:
         type: string
         description: Description of activity.
         example: "The fast-dealing property trading game."
+      min_participants:
+        type: integer
+        description: Minimum number of people who can participate in the activity.
+        example: 2         
       max_participants:
         type: integer
-        description: Number of people who can participate in the activity.
+        description: Maximum number of people who can participate in the activity.
         example: 4
     required:
       - name
       - description
+      - min_participants
       - max_participants
   Error:
     type: object
