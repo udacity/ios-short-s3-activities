@@ -13,7 +13,7 @@ DB_DATA_DIR=${PWD}/Data
 DB_SEED_DIR=${PWD}/Seed
 DB_DATABASE=game_on
 DB_SEED_FILE=/Seed/${DB_DATABASE}.sql
-DB_CONTAINER_ID=$(shell docker ps -aq -f 'name=${DB_CONTAINER}')
+DB_CONTAINER_ID=$(shell docker ps -aq -f 'name=${DB_CONTAINER_NAME}')
 DB_HOST=$(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${DB_CONTAINER_ID})
 DB_PORT=3306
 DB_USER=root
