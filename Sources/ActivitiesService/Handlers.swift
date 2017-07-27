@@ -16,39 +16,42 @@ public class Handlers {
      */
     public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
+        Log.info("GET - /activities route handler...")
+
         if request.method != RouterMethod.get {
             try response.status(.badRequest).end()
             return
         }
 
-        let result = getActivities()
-        try returnResult(result, response: response)
-
-        Log.debug("GET - /activities route handler...")
-    }
-
-    private func getActivities() -> QueryResult? {
-        var returnResult:QueryResult? = nil
-
-        if let connection = connectionPool.getConnection() {
-            connection.execute("SELECT * FROM activities") {
-                (result: QueryResult) in
-
-                returnResult = result
+        getActivities { (result: QueryResult) in
+            do {
+                try self.returnResult(result, response: response)
+            } catch {
+                Log.error("Error info: \(error)")
             }
         }
-
-        return returnResult
     }
 
-    private func returnResult(_ result: QueryResult?, response: RouterResponse) throws {
-        if let error = result?.asError {
+    private func getActivities(completion: @escaping (QueryResult) -> ()) {
+        if let connection = connectionPool.getConnection() {
+            connection.execute("SELECT * FROM activities") { (result: QueryResult) in
+                completion(result)
+            }
+        } else {
+            Log.error("cannot get connection from pool")
+        }
+    }
+
+    private func returnResult(_ result: QueryResult, response: RouterResponse) throws {
+        if let _ = result.asError {
             try response.status(.internalServerError).end()
             return
         }
 
-        if let activities = result?.toActivities() {
-            try response.send (json: activities.toJSON ()).status (.OK).end ()
+        let activities = result.toActivities()
+
+        if activities.count > 0 {
+            try response.send(json: activities.toJSON()).status(.OK).end()
         } else {
             try response.status(.notFound).end()
         }

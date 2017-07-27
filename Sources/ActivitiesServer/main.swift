@@ -1,19 +1,28 @@
-import Foundation
 import Kitura
+import LoggerAPI
+import HeliumLogger
+import Foundation
 import SwiftKuery
 import SwiftKueryMySQL
 import ActivitiesService
 
-// Create a new router
-let router = Router()
+// Disable stdout buffering (so log will appear)
+setbuf(stdout, nil)
 
-// MYSQL_CONNECTION = mysql://\(user):\(password)@\(host):\(port)/\(database)
+// Init logger
+HeliumLogger.use()
 
+// MYSQL_CONNECTION = mysql://user:password@host:port/database
 let connectionString = ProcessInfo.processInfo.environment["MYSQL_CONNECTION"]
-var poolOptions = ConnectionPoolOptions(initialCapacity: 1)
-let connectionPool =  MySQLConnection.createPool(url: URL(string: connectionString)!, poolOptions: poolOptions)
+let poolOptions = ConnectionPoolOptions(initialCapacity: 1)
 
+// Create connection pool
+// TODO: monitor connection; if not connected, re-try/log errors/etc.
+let connectionPool = MySQLConnection.createPool(url: URL(string: connectionString!)!, poolOptions: poolOptions)
 let handlers = Handlers(connectionPool: connectionPool)
+
+// Create router
+let router = Router()
 
 // Handle HTTP GET requests to /
 router.get("/activities", handler: handlers.getActivities)

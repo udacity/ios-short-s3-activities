@@ -51,7 +51,7 @@ public class HandlersTests: XCTestCase {
         request!.method = "POST"
         routerRequest = RouterRequest(request: request!)
 
-        // If method is unsupported, then routerResponse's status will be set
+        // If the method is unsupported, then the response status should be set to badRequest
         try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
 
         XCTAssertEqual(HTTPStatusCode.badRequest, responseRecorder?.statusCode)
