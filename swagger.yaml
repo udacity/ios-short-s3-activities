@@ -135,7 +135,7 @@ definitions:
       emoji:
         type: string
         description: Emoji representing activity.
-        default: ⚔️
+        default: "⚔️"
       description:
         type: string
         description: Description of activity.
