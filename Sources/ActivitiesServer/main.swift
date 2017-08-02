@@ -41,7 +41,7 @@ router.options("/*", handler: handlers.getOptions)
 
 router.get("/*", middleware: CheckRequestMiddleware(method: .get))
 router.get("/activities", handler: handlers.getActivities)
-//router.get("/activity/:id", handler: handlers.getActivity)
+router.get("/activities/:id", handler: handlers.getActivity)
 
 router.post("/*", middleware: CheckRequestMiddleware(method: .post))
 //router.post("/activities", handler: handlers.postActivity)
