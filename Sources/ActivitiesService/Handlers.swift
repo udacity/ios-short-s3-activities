@@ -131,7 +131,28 @@ public class Handlers {
                 min_participants = \(minParticipants),
                 max_participants = \(maxParticipants) WHERE id = \(id)
                 """, withConnection: connection)
-            try response.send(json: JSON(["status": 200, "message": "resource updated"])).status(.OK).end()
+            try response.send(json: JSON(["status": 204, "message": "resource updated"])).status(.noContent).end()
+        } catch {
+            Log.error("cannot get connection from pool")
+            try response.status(.internalServerError).end()
+        }
+    }
+
+    // MARK: DELETE
+
+    public func deleteActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
+        do {
+            // get connection (release to pool when finished)
+            let connection = try connectionPool.getConnection()!
+            defer { connectionPool.releaseConnection(connection) }
+
+            // get id, make request
+            if let id = request.parameters["id"] {
+                let _ = executeQuery("DELETE FROM activities WHERE id = \(id)", withConnection: connection)
+                try response.send(json: JSON(["status": 204, "message": "resource deleted"])).status(.noContent).end()
+            } else {
+                try response.status(.badRequest).end()
+            }
         } catch {
             Log.error("cannot get connection from pool")
             try response.status(.internalServerError).end()
