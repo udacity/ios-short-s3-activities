@@ -39,9 +39,14 @@ router.all("/*", middleware: AllRemoteOriginMiddleware())
 router.all("/*", middleware: LoggerMiddleware())
 router.options("/*", handler: handlers.getOptions)
 
+router.get("/*", middleware: CheckRequestMiddleware(method: .get))
 router.get("/activities", handler: handlers.getActivities)
-//router.post("/activities", handler: handlers.postActivity)
 //router.get("/activity/:id", handler: handlers.getActivity)
+
+router.post("/*", middleware: CheckRequestMiddleware(method: .post))
+//router.post("/activities", handler: handlers.postActivity)
+
+router.delete("/*", middleware: CheckRequestMiddleware(method: .delete))
 //router.delete("/activity/:id", handler: handlers.deleteActivity)
 
 // Add an HTTP server and connect it to the router

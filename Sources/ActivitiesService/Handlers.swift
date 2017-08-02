@@ -24,14 +24,6 @@ public class Handlers {
      * Handler for getting an application/json response.
      */
     public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
-
-        Log.info("GET - /activities route handler...")
-
-        if request.method != RouterMethod.get {
-            try response.status(.badRequest).end()
-            return
-        }
-
         do {
             let connection = try connectionPool.getConnection()!
 
