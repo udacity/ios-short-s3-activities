@@ -96,6 +96,48 @@ public class Handlers {
         }
     }
 
+    // MARK: PUT
+
+    public func updateActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
+
+        guard let body = request.body, case let .json(json) = body else {
+            Log.error("Body contains invalid JSON")
+            try response.status(.badRequest).end()
+            return
+        }
+
+        guard let id = request.parameters["id"],
+            let name = json["name"].string,
+            let description = json["description"].string,
+            let genre = json["genre"].string,
+            let minParticipants = json["min_participants"].int,
+            let maxParticipants = json["max_participants"].int else {
+                Log.error("Parameters missing")
+                try response.status(.badRequest).end()
+                return
+        }
+
+        do {
+            // get connection (release to pool when finished)
+            let connection = try connectionPool.getConnection()!
+            defer { connectionPool.releaseConnection(connection) }
+
+            // make request
+            let _ = executeQuery("""
+                UPDATE activities SET
+                name = '\(name)',
+                description = '\(description)',
+                genre = '\(genre)',
+                min_participants = \(minParticipants),
+                max_participants = \(maxParticipants) WHERE id = \(id)
+                """, withConnection: connection)
+            try response.send(json: JSON(["status": 200, "message": "resource updated"])).status(.OK).end()
+        } catch {
+            Log.error("cannot get connection from pool")
+            try response.status(.internalServerError).end()
+        }
+    }
+
     // MARK: Utility
 
     private func executeQuery(_ query: String, withConnection connection: MySQLConnectionProtocol) -> (MySQLResultProtocol?, error: MySQLError?) {

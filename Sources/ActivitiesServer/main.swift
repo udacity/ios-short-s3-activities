@@ -47,7 +47,7 @@ router.post("/*", middleware: CheckRequestMiddleware(method: .post))
 router.post("/activities", handler: handlers.postActivity)
 
 router.put("/*", middleware: CheckRequestMiddleware(method: .put))
-router.put("/activities/:id", handler: handlers.postActivity)
+router.put("/activities/:id", handler: handlers.updateActivity)
 
 router.delete("/*", middleware: CheckRequestMiddleware(method: .delete))
 //router.delete("/activities/:id", handler: handlers.deleteActivity)
