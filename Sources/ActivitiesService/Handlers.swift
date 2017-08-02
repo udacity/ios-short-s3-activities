@@ -15,53 +15,58 @@ public class Handlers {
 
     // MARK: OPTIONS
 
-    public func getOptions(request: RouterRequest, response: RouterResponse, next: () -> Void) {
+    public func getOptions(request: RouterRequest, response: RouterResponse, next: () -> Void) throws {
         response.headers["Access-Control-Allow-Headers"] = "accept, content-type"
         response.headers["Access-Control-Allow-Methods"] = "GET,POST,DELETE,OPTIONS,PUT"
-        response.status(.OK)
-        next()
+        try response.status(.OK).end()
     }
 
     // MARK: GET
 
-    public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
+    public func onGetActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
         do {
-            // get connection (release to pool when finished)
-            let connection = try connectionPool.getConnection()!
-            defer { connectionPool.releaseConnection(connection) }
-
-            let result = executeQuery("SELECT * FROM activities", withConnection: connection)
-            try returnResult(result, response: response)
-
-        } catch {
-            Log.error("cannot get connection from pool")
-            try response.status(.internalServerError).end()
+            if let connection = try connectionPool.getConnection() {
+                defer { connectionPool.releaseConnection(connection) }
+                try getActivity(withID: nil, connection: connection, response: response)
+            } else {
+                try response.status(.internalServerError).end()
+            }
         }
     }
 
-    public func getActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
-        do {
-            // get connection (release to pool when finished)
-            let connection = try connectionPool.getConnection()!
-            defer { connectionPool.releaseConnection(connection) }
+    public func onGetActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
-            // get id, make request
-            if let id = request.parameters["id"] {
-                let result = executeQuery("SELECT * FROM activities WHERE id = \(id)", withConnection: connection)
+        guard let id = request.parameters["id"] else {
+            Log.error("Parameters missing")
+            try response.status(.badRequest).end()
+            return
+        }
+
+        do {
+            if let connection = try connectionPool.getConnection() {
+                defer { connectionPool.releaseConnection(connection) }
+                try getActivity(withID: id, connection: connection, response: response)
+            } else {
+                try response.status(.internalServerError).end()
+            }
+        }
+    }
+
+    private func getActivity(withID id: String? = nil, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
+        do {
+            if let id = id {
+                let result = executeQuery("SELECT * FROM activities WHERE id = \(id)", connection: connection)
                 try returnResult(result, response: response)
             } else {
-                try response.status(.badRequest).end()
+                let result = executeQuery("SELECT * FROM activities", connection: connection)
+                try returnResult(result, response: response)
             }
-
-        } catch {
-            Log.error("cannot get connection from pool")
-            try response.status(.internalServerError).end()
         }
     }
 
     // MARK: POST
 
-    public func postActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
+    public func onCreateActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         guard let body = request.body, case let .json(json) = body else {
             Log.error("Body contains invalid JSON")
@@ -79,26 +84,33 @@ public class Handlers {
                 return
         }
 
-        do {
-            // get connection (release to pool when finished)
-            let connection = try connectionPool.getConnection()!
-            defer { connectionPool.releaseConnection(connection) }
+        let newActivity = Activity(id: nil, name: name, description: description, genre: genre,
+            minParticipants: minParticipants, maxParticipants: maxParticipants,
+            createdAt: nil, updatedAt: nil)
 
-            // make request
+        do {
+            if let connection = try connectionPool.getConnection() {
+                defer { connectionPool.releaseConnection(connection) }
+                try createNewActivity(newActivity, connection: connection, response: response)
+            } else {
+                try response.status(.internalServerError).end()
+            }
+        }
+    }
+
+    private func createNewActivity(_ activity: Activity, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
+        do {
             let _ = executeQuery("""
                 INSERT INTO activities (name, description, genre, min_participants, max_participants)
-                VALUES ('\(name)', '\(description)', '\(genre)', \(minParticipants), \(maxParticipants))
-                """, withConnection: connection)
+                VALUES ('\(activity.name!)', '\(activity.description!)', '\(activity.genre!)', \(activity.minParticipants!), \(activity.maxParticipants!))
+                """, connection: connection)
             try response.send(json: JSON(["status": 201, "message": "resource created"])).status(.created).end()
-        } catch {
-            Log.error("cannot get connection from pool")
-            try response.status(.internalServerError).end()
         }
     }
 
     // MARK: PUT
 
-    public func updateActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
+    public func onUpdateActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         guard let body = request.body, case let .json(json) = body else {
             Log.error("Body contains invalid JSON")
@@ -117,51 +129,61 @@ public class Handlers {
                 return
         }
 
-        do {
-            // get connection (release to pool when finished)
-            let connection = try connectionPool.getConnection()!
-            defer { connectionPool.releaseConnection(connection) }
+        let tempActivity = Activity(id: Int(id), name: name, description: description, genre: genre,
+            minParticipants: minParticipants, maxParticipants: maxParticipants,
+            createdAt: nil, updatedAt: nil)
 
-            // make request
+        do {
+            if let connection = try connectionPool.getConnection() {
+                defer { connectionPool.releaseConnection(connection) }
+                try updateActivity(tempActivity, connection: connection, response: response)
+            } else {
+                try response.status(.internalServerError).end()
+            }
+        }
+    }
+
+    private func updateActivity(_ activity: Activity, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
+        do {
             let _ = executeQuery("""
-                UPDATE activities SET
-                name = '\(name)',
-                description = '\(description)',
-                genre = '\(genre)',
-                min_participants = \(minParticipants),
-                max_participants = \(maxParticipants) WHERE id = \(id)
-                """, withConnection: connection)
+                UPDATE activities SET name = '\(activity.name!)', description = '\(activity.description!)',
+                genre = '\(activity.genre!)', min_participants = \(activity.minParticipants!),
+                max_participants = \(activity.maxParticipants!) WHERE id = \(activity.id!)
+                """, connection: connection)
             try response.send(json: JSON(["status": 204, "message": "resource updated"])).status(.noContent).end()
-        } catch {
-            Log.error("cannot get connection from pool")
-            try response.status(.internalServerError).end()
         }
     }
 
     // MARK: DELETE
 
-    public func deleteActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
-        do {
-            // get connection (release to pool when finished)
-            let connection = try connectionPool.getConnection()!
-            defer { connectionPool.releaseConnection(connection) }
+    public func onDeleteActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
-            // get id, make request
-            if let id = request.parameters["id"] {
-                let _ = executeQuery("DELETE FROM activities WHERE id = \(id)", withConnection: connection)
-                try response.send(json: JSON(["status": 204, "message": "resource deleted"])).status(.noContent).end()
+        guard let id = request.parameters["id"] else {
+            Log.error("Parameters missing")
+            try response.status(.badRequest).end()
+            return
+        }
+
+        do {
+            if let connection = try connectionPool.getConnection() {
+                defer { connectionPool.releaseConnection(connection) }
+                try deleteActivityWithID(id, connection: connection, response: response)
             } else {
-                try response.status(.badRequest).end()
+                try response.status(.internalServerError).end()
             }
-        } catch {
-            Log.error("cannot get connection from pool")
-            try response.status(.internalServerError).end()
+        }
+    }
+
+    private func deleteActivityWithID(_ id: String, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
+        do {
+            let _ = executeQuery("DELETE FROM activities WHERE id = \(id)", connection: connection)
+            try response.send(json: JSON(["status": 204, "message": "resource deleted"])).status(.noContent).end()
         }
     }
 
     // MARK: Utility
 
-    private func executeQuery(_ query: String, withConnection connection: MySQLConnectionProtocol) -> (MySQLResultProtocol?, error: MySQLError?) {
+    private func executeQuery(_ query: String, connection: MySQLConnectionProtocol) -> (MySQLResultProtocol?, error: MySQLError?) {
         let client = MySQLClient(connection: connection)
         return client.execute(query: query)
     }

@@ -13,10 +13,11 @@ public class CheckRequestMiddleware: RouterMiddleware {
 
     public func handle(request: RouterRequest, response: RouterResponse, next: @escaping () -> Swift.Void) {
         do {
-            if request.method != method {
-                try response.status(.badRequest).end()
-            } else {
+            if request.method == method {
                 next()
+            } else {
+                Log.error("Request method \(request.method) doesn't match expectation")
+                try response.status(.badRequest).end()
             }
         } catch {
             Log.error("Failed to send response")

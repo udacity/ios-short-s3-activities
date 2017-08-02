@@ -19,7 +19,7 @@ public struct Activity {
 extension Activity: JSONAble {
     public func toJSON() -> JSON {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
 
         var dict = [String: Any]()
         let nilString: String? = nil
