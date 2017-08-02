@@ -11,8 +11,8 @@ DB_IMAGE=mysql-database
 DB_CONTAINER_NAME=activities-database
 DB_DATA_DIR=${PWD}/Data
 DB_SEED_DIR=${PWD}/Seed
-DB_DATABASE=game_on
-DB_SEED_FILE=/Seed/${DB_DATABASE}.sql
+DB_DATABASE=game_night
+DB_SEED_FILE=/Seed/${DB_CONTAINER_NAME}.sql
 DB_CONTAINER_ID=$(shell docker ps -aq -f 'name=${DB_CONTAINER_NAME}')
 DB_HOST=$(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${DB_CONTAINER_ID})
 DB_PORT=3306
@@ -41,7 +41,12 @@ env_start_seed: db_run_seed web_dev
 web_dev:
 	docker run --name ${WEB_CONTAINER_NAME} \
 	-it --rm -v ${PWD}:/src \
-	-w /src -e MYSQL_CONNECTION=mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE} \
+	-w /src \
+	-e MYSQL_HOST=${DB_HOST} \
+	-e MYSQL_PORT=${DB_PORT} \
+	-e MYSQL_USER=${DB_USER} \
+	-e MYSQL_PASSWORD=${DB_PASSWORD} \
+	-e MYSQL_DATABASE=${DB_DATABASE} \
 	-p ${WEB_HOST_PORT}:${WEB_CONTAINER_PORT} ${WEB_IMAGE} /bin/bash
 
 web_build:
@@ -53,6 +58,8 @@ web_build_run:
 
 web_clean:
 	rm -rf .build
+	rm Package.pins
+	rm Package.resolved
 
 web_unit_test:
 	swift test -s ActivitiesTests.HandlersTests -Xlinker -L/usr/local/lib

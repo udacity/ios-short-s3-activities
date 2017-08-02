@@ -1,25 +1,30 @@
-// swift-tools-version:3.1
+// swift-tools-version:4.0
 
 import PackageDescription
 
 let package = Package(
-    name: "Server",
+    name: "ActivitiesService",
 
-    targets: [
-        Target(name: "ActivitiesService"),
-        Target(name: "ActivitiesServer", dependencies: ["ActivitiesService"]),
-        Target(name: "ActivitiesTests", dependencies: ["ActivitiesService"]),
-        Target(name: "FunctionalTests")
+    products: [
+        .executable(name: "ActivitiesServer", targets: ["ActivitiesServer"]),
     ],
 
     dependencies: [
-        .Package(url: "https://github.com/IBM-Swift/Kitura.git", majorVersion: 1, minor: 7),
-        .Package(url: "https://github.com/IBM-Swift/Swift-Kuery.git", majorVersion: 0, minor: 13),
-        .Package(url: "https://github.com/IBM-Swift/SwiftKueryMySQL.git", majorVersion: 0, minor: 13),
-        .Package(url: "https://github.com/IBM-Swift/HeliumLogger.git", majorVersion: 1),
+        .package(url: "https://github.com/IBM-Swift/Kitura.git", from: "1.7.0"),
+        .package(url: "https://github.com/IBM-Swift/HeliumLogger.git", from: "1.0.0"),
+        //.package(url: "https://github.com/nicholasjackson/swift-mysql.git", from: "1.1.0"),
+        .package(url: "https://github.com/jarrodparkes/swift-mysql.git", .branch("master")),
 
-        // Test imports
-        .Package(url: "https://github.com/nicholasjackson/kitura-http-test.git", majorVersion:0, minor: 2),
-        .Package(url: "https://github.com/nicholasjackson/Swift-Kuery-Mock.git", majorVersion:0, minor: 1)
-    ]
+        // test imports
+        .package(url: "https://github.com/nicholasjackson/kitura-http-test.git", from: "0.2.0")
+    ],
+
+    targets: [
+        .target(name: "ActivitiesService", dependencies: ["Kitura", "HeliumLogger", "MySQL"]),
+        .target(name: "ActivitiesServer", dependencies: ["ActivitiesService"]),
+        .testTarget(name: "ActivitiesTests", dependencies: ["ActivitiesService"]),
+        .testTarget(name: "FunctionalTests")
+    ],
+
+    swiftLanguageVersions: [3]
 )

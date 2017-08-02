@@ -2,13 +2,13 @@ import Foundation
 import Kitura
 import SwiftyJSON
 import LoggerAPI
-import SwiftKuery
+import MySQL
 
 public class Handlers {
-    var connectionPool: ConnectionPool
+    var connectionPool: MySQLConnectionPool
 
-    public init(connectionPool: ConnectionPool) {
-       self.connectionPool = connectionPool
+    public init(connectionPool: MySQLConnectionPool) {
+        self.connectionPool = connectionPool
     }
 
     /**
@@ -23,37 +23,38 @@ public class Handlers {
             return
         }
 
-        getActivities { (result: QueryResult) in
-            do {
-                try self.returnResult(result, response: response)
-            } catch {
-                Log.error("Error info: \(error)")
+        do {
+            let connection = try connectionPool.getConnection()!
+
+            // release the connection back to the pool
+            defer {
+                connectionPool.releaseConnection(connection)
             }
+
+            let client = MySQLClient(connection: connection)
+            let result = client.execute(query: "SELECT * from activities")
+            try returnResult(result, response: response)
+
+        } catch {
+            Log.error("cannot get connection from pool")
+            try response.status(.internalServerError).end()
         }
     }
 
-    private func getActivities(completion: @escaping (QueryResult) -> ()) {
-        if let connection = connectionPool.getConnection() {
-            connection.execute("SELECT * FROM activities") { (result: QueryResult) in
-                completion(result)
+    private func returnResult(_ result: (MySQLResultProtocol?, error: MySQLError?), response: RouterResponse) throws {
+
+        if let results = result.0 as? MySQLResult {
+            let activities = results.toActivities()
+
+            if activities.count > 0 {
+                try response.send(json: activities.toJSON()).status(.OK).end()
+            } else {
+                try response.status(.notFound).end()
             }
         } else {
-            Log.error("cannot get connection from pool")
-        }
-    }
-
-    private func returnResult(_ result: QueryResult, response: RouterResponse) throws {
-        if let _ = result.asError {
+            Log.error(result.1?.localizedDescription ?? "")
             try response.status(.internalServerError).end()
             return
-        }
-
-        let activities = result.toActivities()
-
-        if activities.count > 0 {
-            try response.send(json: activities.toJSON()).status(.OK).end()
-        } else {
-            try response.status(.notFound).end()
         }
     }
 }

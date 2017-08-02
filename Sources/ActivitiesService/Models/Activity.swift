@@ -1,20 +1,5 @@
 import Foundation
 import SwiftyJSON
-import SwiftKuery
-
-// MARK: - ActivityTable
-
-public class ActivityTable: Table {
-    public let tableName = "activities"
-    public let id = Column("id")
-    public let name = Column("name")
-    public let description = Column("description")
-    public let genre = Column("genre")
-    public let minParticipants = Column("min_participants")
-    public let maxParticipants = Column("max_participants")
-    public let createdAt = Column("updated_at")
-    public let updatedAt = Column("created_at")
-}
 
 // MARK: - Activity
 

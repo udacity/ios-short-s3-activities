@@ -11,12 +11,21 @@
         }
       },
       {
-        "package": "CMySQL",
-        "repositoryURL": "https://github.com/IBM-Swift/CMySQL.git",
+        "package": "CEpoll",
+        "repositoryURL": "https://github.com/IBM-Swift/CEpoll.git",
         "state": {
           "branch": null,
-          "revision": "5dc77dcb22145eb315d30be65af2145d6c7b5316",
-          "version": "0.1.1"
+          "revision": "111cbcb0d2485d9c7eb07596a6903622504961e5",
+          "version": "0.1.0"
+        }
+      },
+      {
+        "package": "HeliumLogger",
+        "repositoryURL": "https://github.com/IBM-Swift/HeliumLogger.git",
+        "state": {
+          "branch": null,
+          "revision": "9b310ce5d126580028de665c914578d58e34b8ac",
+          "version": "1.7.0"
         }
       },
       {
@@ -29,21 +38,21 @@
         }
       },
       {
+        "package": "Kitura-net",
+        "repositoryURL": "https://github.com/IBM-Swift/Kitura-net.git",
+        "state": {
+          "branch": null,
+          "revision": "b5c3b26321964978abb3b03230684a347a00a4b7",
+          "version": "1.7.15"
+        }
+      },
+      {
         "package": "Kitura-TemplateEngine",
         "repositoryURL": "https://github.com/IBM-Swift/Kitura-TemplateEngine.git",
         "state": {
           "branch": null,
           "revision": "c209801c7d53c347750d063e8950cb2ccbf6ed2b",
           "version": "1.7.1"
-        }
-      },
-      {
-        "package": "Kitura-net",
-        "repositoryURL": "https://github.com/IBM-Swift/Kitura-net.git",
-        "state": {
-          "branch": null,
-          "revision": "dc135bc49fbf1023cd09354a5eb642eb21584280",
-          "version": "1.7.13"
         }
       },
       {
@@ -65,12 +74,30 @@
         }
       },
       {
-        "package": "SSLService",
-        "repositoryURL": "https://github.com/IBM-Swift/BlueSSLService.git",
+        "package": "MySQL",
+        "repositoryURL": "https://github.com/jarrodparkes/swift-mysql.git",
+        "state": {
+          "branch": "master",
+          "revision": "237762dcee6186b0ebe67ee13448b5c0abe9739f",
+          "version": null
+        }
+      },
+      {
+        "package": "OpenSSL",
+        "repositoryURL": "https://github.com/IBM-Swift/OpenSSL.git",
         "state": {
           "branch": null,
-          "revision": "78e19eb4137ca98c13cea1539c8144908a906d17",
-          "version": "0.12.45"
+          "revision": "740ca278df3f4698698810c6aabf3c6d09d682d6",
+          "version": "0.3.6"
+        }
+      },
+      {
+        "package": "Signals",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueSignals.git",
+        "state": {
+          "branch": null,
+          "revision": "99ac410f8ad4a75f0ec9a9d72512d5028e804253",
+          "version": "0.9.48"
         }
       },
       {
@@ -78,35 +105,26 @@
         "repositoryURL": "https://github.com/IBM-Swift/BlueSocket.git",
         "state": {
           "branch": null,
-          "revision": "007fa4078475bf410d75bc1871487f64872e7c78",
-          "version": "0.12.56"
+          "revision": "632e6cd9edd61fd695bb537f2c676af7aad5c336",
+          "version": "0.12.57"
         }
       },
       {
-        "package": "SwiftKuery",
-        "repositoryURL": "https://github.com/IBM-Swift/Swift-Kuery.git",
+        "package": "SSLService",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueSSLService.git",
         "state": {
           "branch": null,
-          "revision": "4cb27ddd5d08b1b8bf749858c70855d40649d7e1",
-          "version": "0.13.2"
+          "revision": "9f5d0b37b7856c502873223544f37689484778bc",
+          "version": "0.12.47"
         }
       },
       {
-        "package": "SwiftKueryMock",
-        "repositoryURL": "https://github.com/nicholasjackson/Swift-Kuery-Mock.git",
+        "package": "swift-libmysql",
+        "repositoryURL": "https://github.com/nicholasjackson/swift-libmysql",
         "state": {
           "branch": null,
-          "revision": "71a99eb3c745b3384e34a97b2b21e1be1bc9ce2f",
-          "version": "0.1.5"
-        }
-      },
-      {
-        "package": "SwiftKueryMySQL",
-        "repositoryURL": "https://github.com/IBM-Swift/SwiftKueryMySQL.git",
-        "state": {
-          "branch": null,
-          "revision": "0e04f6b2df90163caada0aa13276c44df81aa3e2",
-          "version": "0.13.0"
+          "revision": "7354cab9c38aa016a8bb07a9678f64878b4d5752",
+          "version": "0.1.0"
         }
       },
       {
