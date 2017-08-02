@@ -4,11 +4,20 @@ import SwiftyJSON
 import LoggerAPI
 import MySQL
 
+// MARK: - Handlers
+
 public class Handlers {
     var connectionPool: MySQLConnectionPool
 
     public init(connectionPool: MySQLConnectionPool) {
         self.connectionPool = connectionPool
+    }
+
+    public func getOptions(request: RouterRequest, response: RouterResponse, next: () -> Void) {
+        response.headers["Access-Control-Allow-Headers"] = "accept, content-type"
+        response.headers["Access-Control-Allow-Methods"] = "GET,POST,DELETE,OPTIONS,PUT"
+        response.status(.OK)
+        next()
     }
 
     /**

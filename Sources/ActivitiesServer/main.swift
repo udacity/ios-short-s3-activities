@@ -9,7 +9,7 @@ import MySQL
 setbuf(stdout, nil)
 
 // Init logger
-HeliumLogger.use()
+HeliumLogger.use(.info)
 
 // Create connection string (use env variables, if exists)
 let env = ProcessInfo.processInfo.environment
@@ -32,8 +32,17 @@ let handlers = Handlers(connectionPool: pool)
 // Create router
 let router = Router()
 
-// Handle HTTP GET requests to /
+// Setup paths
+// TODO: Move into a controller object?
+router.all("/*", middleware: BodyParser())
+router.all("/*", middleware: AllRemoteOriginMiddleware())
+router.all("/*", middleware: LoggerMiddleware())
+router.options("/*", handler: handlers.getOptions)
+
 router.get("/activities", handler: handlers.getActivities)
+//router.post("/activities", handler: handlers.postActivity)
+//router.get("/activity/:id", handler: handlers.getActivity)
+//router.delete("/activity/:id", handler: handlers.deleteActivity)
 
 // Add an HTTP server and connect it to the router
 Kitura.addHTTPServer(onPort: 8080, with: router)

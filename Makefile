@@ -58,7 +58,7 @@ web_build_run:
 
 web_clean:
 	rm -rf .build
-	rm Package.pins
+	@rm Package.pins
 	rm Package.resolved
 
 web_unit_test:
