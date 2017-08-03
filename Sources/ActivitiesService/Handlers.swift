@@ -79,42 +79,33 @@ public class Handlers {
             return
         }
 
-        guard let name = json["name"].string,
-            let emoji = json["emoji"].string,
-            let description = json["description"].string,
-            let genre = json["genre"].string,
-            let minParticipants = json["min_participants"].int,
-            let maxParticipants = json["max_participants"].int else {
-                Log.error("Parameters missing")
-                try response.status(.badRequest).end()
-                return
-        }
+        let newActivity = Activity(id: nil, name: json["name"].string,
+            emoji: json["emoji"].string, description: json["description"].string,
+            genre: json["genre"].string, minParticipants: json["min_participants"].int,
+            maxParticipants: json["max_participants"].int, createdAt: nil, updatedAt: nil)
+        let data = newActivity.toDataMySQLRow()
+        let missingParameters = data.1
 
-        let newActivity = Activity(id: nil, name: name, emoji: emoji, description: description,
-            genre: genre, minParticipants: minParticipants, maxParticipants: maxParticipants,
-            createdAt: nil, updatedAt: nil)
+        guard missingParameters.count == 0 else {
+            Log.error("parameters missing \(data.1)")
+            try response.send(json: JSON(["status": 400, "message": "parameters missing \(data.1)"])).status(.badRequest).end()
+            return
+        }
 
         do {
             if let connection = try connectionPool.getConnection() {
                 defer { connectionPool.releaseConnection(connection) }
-                try createNewActivity(newActivity, connection: connection, response: response)
+                try createNewActivity(data.0, connection: connection, response: response)
             } else {
                 try response.status(.internalServerError).end()
             }
         }
     }
 
-    private func createNewActivity(_ activity: Activity, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
+    private func createNewActivity(_ data: MySQLRow, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
         do {
             let insertQuery = MySQLQueryBuilder()
-                .insert(data: [
-                    "name": "\(activity.name!)",
-                    "emoji": "\(activity.emoji!)",
-                    "description": "\(activity.description!)",
-                    "genre": "\(activity.genre!)",
-                    "min_participants": "\(activity.minParticipants!)",
-                    "max_participants": "\(activity.maxParticipants!)"
-                ], table: "activities")
+                .insert(data: data, table: "activities")
 
             let _ = executeQuery(insertQuery, connection: connection)
             try response.send(json: JSON(["status": 201, "message": "resource created"])).status(.created).end()
@@ -131,43 +122,35 @@ public class Handlers {
             return
         }
 
-        guard let id = request.parameters["id"],
-            let name = json["name"].string,
-            let emoji = json["emoji"].string,
-            let description = json["description"].string,
-            let genre = json["genre"].string,
-            let minParticipants = json["min_participants"].int,
-            let maxParticipants = json["max_participants"].int else {
-                Log.error("Parameters missing")
-                try response.status(.badRequest).end()
-                return
+        guard let id = request.parameters["id"] else {
+            Log.error("id (path parameter) missing")
+            try response.status(.badRequest).end()
+            return
         }
 
-        let tempActivity = Activity(id: Int(id), name: name, emoji: emoji, description: description,
-            genre: genre, minParticipants: minParticipants, maxParticipants: maxParticipants,
-            createdAt: nil, updatedAt: nil)
+        let tempActivity = Activity(id: Int(id), name: json["name"].string,
+            emoji: json["emoji"].string, description: json["description"].string,
+            genre: json["genre"].string, minParticipants: json["min_participants"].int,
+            maxParticipants: json["max_participants"].int, createdAt: nil, updatedAt: nil)
+        let data = tempActivity.toDataMySQLRow()
 
         do {
             if let connection = try connectionPool.getConnection() {
                 defer { connectionPool.releaseConnection(connection) }
-                try updateActivity(tempActivity, connection: connection, response: response)
+                try updateActivityWithID(id, data: data.0, connection: connection, response: response)
             } else {
                 try response.status(.internalServerError).end()
             }
         }
     }
 
-    private func updateActivity(_ activity: Activity, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
+    private func updateActivityWithID(_ id: String, data: MySQLRow, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
         do {
             let updateQuery = MySQLQueryBuilder()
-                .update(data: [
-                    "name": "\(activity.name!)",
-                    "emoji": "\(activity.emoji!)",
-                    "description": "\(activity.description!)",
-                    "genre": "\(activity.genre!)",
-                    "min_participants": "\(activity.minParticipants!)",
-                    "max_participants": "\(activity.maxParticipants!)"
-                ], table: "activities").wheres(statement: "WHERE Id=?", parameters: "\(activity.id!)")
+                .update(data: data, table: "activities")
+                .wheres(statement: "WHERE Id=?", parameters: "\(id)")
+
+            Log.info(updateQuery.build())
 
             let _ = executeQuery(updateQuery, connection: connection)
             try response.send(json: JSON(["status": 204, "message": "resource updated"])).status(.noContent).end()

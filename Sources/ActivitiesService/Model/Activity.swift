@@ -13,6 +13,49 @@ public struct Activity {
     public var maxParticipants: Int?
     public var createdAt: Date?
     public var updatedAt: Date?
+
+    func toDataMySQLRow() -> ([String: Any], [String]) {
+        var data = [String: Any]()
+        var missingParameters = [String]()
+
+        if let name = name {
+            data["name"] = name
+        } else {
+            missingParameters.append("name")
+        }
+
+        if let emoji = emoji {
+            data["emoji"] = emoji
+        } else {
+            missingParameters.append("emoji")
+        }
+
+        if let description = description {
+            data["description"] = description
+        } else {
+            missingParameters.append("description")
+        }
+
+        if let genre = genre {
+            data["genre"] = genre
+        } else {
+            missingParameters.append("genre")
+        }
+
+        if let minParticipants = minParticipants {
+            data["min_participants"] = minParticipants
+        } else {
+            missingParameters.append("min_participants")
+        }
+
+        if let maxParticipants = maxParticipants {
+            data["max_participants"] = maxParticipants
+        } else {
+            missingParameters.append("max_participants")
+        }
+
+        return (data, missingParameters)
+    }
 }
 
 // MARK: - Activity: JSONAble
@@ -30,7 +73,7 @@ extension Activity: JSONAble {
         dict["id"] = id != nil ? id : nilString
         dict["name"] = name != nil ? name : nilString
         dict["emoji"] = emoji != nil ? emoji : nilString
-        
+
         dict["description"] = description != nil ? description : nilString
         dict["genre"] = genre != nil ? genre : nilString
 
