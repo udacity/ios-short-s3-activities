@@ -10,14 +10,14 @@ info:
     url: http://jarrodparkes.com
   license:
     name: MIT License
-    
+
 schemes:
   - https
 consumes:
   - application/json
 produces:
   - application/json
-  
+
 paths:
   /activities:
     get:
@@ -45,14 +45,14 @@ paths:
           description: Data for a new activity.
           required: true
           schema:
-            $ref: '#/definitions/Activity'
+            $ref: '#/definitions/NewActivity'
       responses:
         201:
           description: Resource created.
           schema:
             $ref: '#/definitions/Activity'
         400:
-          $ref: "#/responses/BadRequest"            
+          $ref: "#/responses/BadRequest"
         401:
           $ref: "#/responses/Unauthorized"
         404:
@@ -74,7 +74,7 @@ paths:
           schema:
             $ref: '#/definitions/Activity'
         400:
-          $ref: "#/responses/BadRequest"            
+          $ref: "#/responses/BadRequest"
         401:
           $ref: "#/responses/Unauthorized"
         404:
@@ -103,7 +103,7 @@ responses:
   BadRequest:
     description: Invalid request.
     schema:
-      $ref: "#/definitions/Error"  
+      $ref: "#/definitions/Error"
   NotFound:
     description: The specified resource was not found.
     schema:
@@ -115,29 +115,62 @@ responses:
 
 definitions:
   Activity:
+    allOf:
+      - $ref: '#/definitions/NewActivity'
+      - required:
+        - id
+        properties:
+          id:
+            type: string
+            description: ID of activity.
+            readOnly: true
+            default: "1"
+  NewActivity:
     type: object
     properties:
-      id:
-        type: string
-        description: ID of activity.
-        readOnly: true
-        example: "1"
       name:
         type: string
         description: Name of activity.
-        example: "Monopoly"
+        default: "Monopoly"
+      emoji:
+        type: string
+        description: Emoji representing activity.
+        default: "⚔️"
       description:
         type: string
         description: Description of activity.
-        example: "The fast-dealing property trading game."
+        default: "The fast-dealing property trading game."
+      genre:
+        type: string
+        description: Genre of activity.
+        default: "Adventure"
+      min_participants:
+        type: integer
+        description: Minimum number of people who can participate in the activity.
+        default: 2
       max_participants:
         type: integer
-        description: Number of people who can participate in the activity.
-        example: 4
+        description: Maximum number of people who can participate in the activity.
+        default: 4
+      created_at:
+        type: string
+        description: Date activity was created.
+        format: YYYY-mm-dd HH:mm:ss
+        default: "2017-07-24 20:43:51"
+      updated_at:
+        type: string
+        description: Date activity was created.
+        format: YYYY-mm-dd HH:mm:ss
+        default: "2017-07-24 20:43:51"
     required:
       - name
+      - emoji
       - description
+      - genre
+      - min_participants
       - max_participants
+      - created_at
+      - updated_at
   Error:
     type: object
     properties:
@@ -150,7 +183,7 @@ definitions:
         description: Error description.
     required:
       - code
-      - message        
+      - message
     example:
       code: 1
       message: "There was an error."
