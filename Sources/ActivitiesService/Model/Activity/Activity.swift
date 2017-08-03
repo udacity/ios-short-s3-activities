@@ -13,7 +13,11 @@ public struct Activity {
     public var maxParticipants: Int?
     public var createdAt: Date?
     public var updatedAt: Date?
+}
 
+// MARK: - Activity (MySQLRow)
+
+extension Activity {
     func toDataMySQLRow() -> ([String: Any], [String]) {
         var data = [String: Any]()
         var missingParameters = [String]()

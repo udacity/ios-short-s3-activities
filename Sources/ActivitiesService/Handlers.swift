@@ -7,7 +7,12 @@ import MySQL
 // MARK: - Handlers
 
 public class Handlers {
+
+    // MARK: Properties
+
     var connectionPool: MySQLConnectionPool
+
+    // MARK: Initializer
 
     public init(connectionPool: MySQLConnectionPool) {
         self.connectionPool = connectionPool
@@ -61,10 +66,10 @@ public class Handlers {
             if let id = id {
                 let query = selectAllQuery.wheres(statement: "WHERE Id=?", parameters: "\(id)")
                 let result = executeQuery(query, connection: connection)
-                try returnResult(result, response: response)
+                try returnActivityResult(result, response: response)
             } else {
                 let result = executeQuery(selectAllQuery, connection: connection)
-                try returnResult(result, response: response)
+                try returnActivityResult(result, response: response)
             }
         }
     }
@@ -162,7 +167,7 @@ public class Handlers {
     public func onDeleteActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         guard let id = request.parameters["id"] else {
-            Log.error("Parameters missing")
+            Log.error("id (path parameter) missing")
             try response.status(.badRequest).end()
             return
         }
@@ -194,7 +199,7 @@ public class Handlers {
         return client.execute(builder: query)
     }
 
-    private func returnResult(_ result: (MySQLResultProtocol?, error: MySQLError?), response: RouterResponse) throws {
+    private func returnActivityResult(_ result: (MySQLResultProtocol?, error: MySQLError?), response: RouterResponse) throws {
 
         if let results = result.0 as? MySQLResult {
             let activities = results.toActivities()
