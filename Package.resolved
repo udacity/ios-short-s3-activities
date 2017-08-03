@@ -78,7 +78,7 @@
         "repositoryURL": "https://github.com/jarrodparkes/swift-mysql.git",
         "state": {
           "branch": "master",
-          "revision": "1802e2096e042f4e41e2f7fe79238146d7b67783",
+          "revision": "8a9a23458abee1f674933c4b31bea2dad4eb3838",
           "version": null
         }
       },
@@ -105,8 +105,8 @@
         "repositoryURL": "https://github.com/IBM-Swift/BlueSocket.git",
         "state": {
           "branch": null,
-          "revision": "632e6cd9edd61fd695bb537f2c676af7aad5c336",
-          "version": "0.12.57"
+          "revision": "1e825b58faebf127631a7245949414b0c2f899e5",
+          "version": "0.12.58"
         }
       },
       {

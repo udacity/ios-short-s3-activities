@@ -54,11 +54,16 @@ public class Handlers {
 
     private func getActivity(withID id: String? = nil, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
         do {
+            let selectAllQuery = MySQLQueryBuilder()
+                .select(fields: ["id", "name", "emoji", "description", "genre",
+                "min_participants", "max_participants", "created_at", "updated_at"], table: "activities")
+
             if let id = id {
-                let result = executeQuery("SELECT * FROM activities WHERE id = \(id)", connection: connection)
+                let query = selectAllQuery.wheres(statement: "WHERE Id=?", parameters: "\(id)")
+                let result = executeQuery(query, connection: connection)
                 try returnResult(result, response: response)
             } else {
-                let result = executeQuery("SELECT * FROM activities", connection: connection)
+                let result = executeQuery(selectAllQuery, connection: connection)
                 try returnResult(result, response: response)
             }
         }
@@ -101,10 +106,17 @@ public class Handlers {
 
     private func createNewActivity(_ activity: Activity, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
         do {
-            let _ = executeQuery("""
-                INSERT INTO activities (name, description, genre, min_participants, max_participants)
-                VALUES ('\(activity.name!)', '\(activity.description!)', '\(activity.genre!)', \(activity.minParticipants!), \(activity.maxParticipants!))
-                """, connection: connection)
+            let insertQuery = MySQLQueryBuilder()
+                .insert(data: [
+                    "name": "\(activity.name!)",
+                    "emoji": "\(activity.emoji!)",
+                    "description": "\(activity.description!)",
+                    "genre": "\(activity.genre!)",
+                    "min_participants": "\(activity.minParticipants!)",
+                    "max_participants": "\(activity.maxParticipants!)"
+                ], table: "activities")
+
+            let _ = executeQuery(insertQuery, connection: connection)
             try response.send(json: JSON(["status": 201, "message": "resource created"])).status(.created).end()
         }
     }
@@ -147,11 +159,17 @@ public class Handlers {
 
     private func updateActivity(_ activity: Activity, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
         do {
-            let _ = executeQuery("""
-                UPDATE activities SET name = '\(activity.name!)', description = '\(activity.description!)',
-                genre = '\(activity.genre!)', min_participants = \(activity.minParticipants!),
-                max_participants = \(activity.maxParticipants!) WHERE id = \(activity.id!)
-                """, connection: connection)
+            let updateQuery = MySQLQueryBuilder()
+                .update(data: [
+                    "name": "\(activity.name!)",
+                    "emoji": "\(activity.emoji!)",
+                    "description": "\(activity.description!)",
+                    "genre": "\(activity.genre!)",
+                    "min_participants": "\(activity.minParticipants!)",
+                    "max_participants": "\(activity.maxParticipants!)"
+                ], table: "activities").wheres(statement: "WHERE Id=?", parameters: "\(activity.id!)")
+
+            let _ = executeQuery(updateQuery, connection: connection)
             try response.send(json: JSON(["status": 204, "message": "resource updated"])).status(.noContent).end()
         }
     }
@@ -178,16 +196,19 @@ public class Handlers {
 
     private func deleteActivityWithID(_ id: String, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
         do {
-            let _ = executeQuery("DELETE FROM activities WHERE id = \(id)", connection: connection)
+            let deleteQuery = MySQLQueryBuilder()
+                .delete(fromTable: "activities").wheres(statement: "WHERE Id=?", parameters: "\(id)")
+
+            let _ = executeQuery(deleteQuery, connection: connection)
             try response.send(json: JSON(["status": 204, "message": "resource deleted"])).status(.noContent).end()
         }
     }
 
     // MARK: Utility
 
-    private func executeQuery(_ query: String, connection: MySQLConnectionProtocol) -> (MySQLResultProtocol?, error: MySQLError?) {
+    private func executeQuery(_ query: MySQLQueryBuilder, connection: MySQLConnectionProtocol) -> (MySQLResultProtocol?, error: MySQLError?) {
         let client = MySQLClient(connection: connection)
-        return client.execute(query: query)
+        return client.execute(builder: query)
     }
 
     private func returnResult(_ result: (MySQLResultProtocol?, error: MySQLError?), response: RouterResponse) throws {
