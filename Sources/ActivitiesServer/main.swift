@@ -20,7 +20,7 @@ connectionString.password = env["MYSQL_PASSWORD"] ?? "password"
 connectionString.database = env["MYSQL_DATABASE"] ?? "game-night"
 
 // Create connection pool
-var pool = MySQLConnectionPool(connectionString: connectionString, poolSize: 10) {
+var pool = MySQLConnectionPool(connectionString: connectionString, poolSize: 10, defaultCharset: "utf8mb4") {
   return MySQL.MySQLConnection()
 }
 

@@ -75,6 +75,7 @@ public class Handlers {
         }
 
         guard let name = json["name"].string,
+            let emoji = json["emoji"].string,
             let description = json["description"].string,
             let genre = json["genre"].string,
             let minParticipants = json["min_participants"].int,
@@ -84,8 +85,8 @@ public class Handlers {
                 return
         }
 
-        let newActivity = Activity(id: nil, name: name, description: description, genre: genre,
-            minParticipants: minParticipants, maxParticipants: maxParticipants,
+        let newActivity = Activity(id: nil, name: name, emoji: emoji, description: description,
+            genre: genre, minParticipants: minParticipants, maxParticipants: maxParticipants,
             createdAt: nil, updatedAt: nil)
 
         do {
@@ -120,6 +121,7 @@ public class Handlers {
 
         guard let id = request.parameters["id"],
             let name = json["name"].string,
+            let emoji = json["emoji"].string,
             let description = json["description"].string,
             let genre = json["genre"].string,
             let minParticipants = json["min_participants"].int,
@@ -129,8 +131,8 @@ public class Handlers {
                 return
         }
 
-        let tempActivity = Activity(id: Int(id), name: name, description: description, genre: genre,
-            minParticipants: minParticipants, maxParticipants: maxParticipants,
+        let tempActivity = Activity(id: Int(id), name: name, emoji: emoji, description: description,
+            genre: genre, minParticipants: minParticipants, maxParticipants: maxParticipants,
             createdAt: nil, updatedAt: nil)
 
         do {

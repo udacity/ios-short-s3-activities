@@ -6,6 +6,7 @@ import SwiftyJSON
 public struct Activity {
     public var id: Int?
     public var name: String?
+    public var emoji: String?
     public var description: String?
     public var genre: String?
     public var minParticipants: Int?
@@ -28,6 +29,8 @@ extension Activity: JSONAble {
 
         dict["id"] = id != nil ? id : nilString
         dict["name"] = name != nil ? name : nilString
+        dict["emoji"] = emoji != nil ? emoji : nilString
+        
         dict["description"] = description != nil ? description : nilString
         dict["genre"] = genre != nil ? genre : nilString
 

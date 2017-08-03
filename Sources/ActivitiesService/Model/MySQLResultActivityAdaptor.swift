@@ -21,7 +21,7 @@ public extension MySQLResult {
            if let maxParticipants = row["max_participants"] as? Int {
                activity.maxParticipants = Int(maxParticipants)
            }
-           
+
            let dateFormatter = DateFormatter()
            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
 
@@ -35,6 +35,10 @@ public extension MySQLResult {
 
            if let name = row["name"] as? String {
                activity.name = name
+           }
+
+           if let emoji = row["emoji"] as? String {
+               activity.emoji = emoji
            }
 
            if let genre = row["genre"] as? String {

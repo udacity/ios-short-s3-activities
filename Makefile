@@ -19,6 +19,9 @@ DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=password
 
+# testing
+TEST_COMMAND=swift test -Xlinker -L/usr/local/lib
+
 # =============
 # Build Images
 # =============
@@ -52,21 +55,19 @@ web_dev:
 web_build:
 	swift build -Xlinker -L/usr/local/lib
 
-web_build_run:
-	swift build -Xlinker -L/usr/local/lib
+web_build_run: web_build
 	./.build/debug/ActivitiesServer
 
 web_clean:
-	rm -rf .build
-	@rm Package.pins
+	rm -rf .build	
 	rm Package.resolved
 
 web_unit_test:
-	swift test -s ActivitiesTests.HandlersTests -Xlinker -L/usr/local/lib
-	swift test -s ActivitiesTests.QueryResultAdaptorTests -Xlinker -L/usr/local/lib
+	$(TEST_COMMAND) -s ActivitiesTests.HandlersTests
+	$(TEST_COMMAND) -s ActivitiesTests.QueryResultAdaptorTests
 
 web_functional_test:
-	swift test -s FunctionalTests.FunctionalTests -Xlinker -L/usr/local/lib
+	$(TEST_COMMAND) -s FunctionalTests.FunctionalTests
 
 web_unit_test_docker:
 	docker run --rm -v $(shell pwd):/src \
@@ -83,31 +84,31 @@ db_run: db_stop
 	docker run --name ${DB_CONTAINER_NAME} \
 	-v ${DB_DATA_DIR}:/var/lib/mysql \
 	-e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
-	-d --expose ${DB_PORT} ${DB_IMAGE}
+	-d --expose ${DB_PORT} ${DB_IMAGE} --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
 
 db_run_clean: db_stop db_clean
 	docker run --name ${DB_CONTAINER_NAME} \
 	-v ${DB_DATA_DIR}:/var/lib/mysql \
 	-e MYSQL_DATABASE=${DB_DATABASE} -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
-	-d --expose ${DB_PORT} ${DB_IMAGE}
+	-d --expose ${DB_PORT} ${DB_IMAGE} --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
 
 db_run_seed: db_stop db_clean
 	docker run --name ${DB_CONTAINER_NAME} \
 	-v ${DB_SEED_DIR}:/docker-entrypoint-initdb.d -v ${DB_DATA_DIR}:/var/lib/mysql \
 	-e MYSQL_DATABASE=${DB_DATABASE} -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
-	-d --expose ${DB_PORT} ${DB_IMAGE}
+	-d --expose ${DB_PORT} ${DB_IMAGE} --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
 
 db_connect_bash:
 	docker exec -it ${DB_CONTAINER_ID} /bin/bash
 
 db_connect_shell:
 	docker run --name mysql-shell -it \
-	--rm mysql sh -c 'exec mysql -h${DB_HOST} -P${DB_PORT} -u${DB_USER} -p${DB_PASSWORD}'
+	--rm mysql sh -c 'exec mysql -h${DB_HOST} -P${DB_PORT} -u${DB_USER} -p${DB_PASSWORD} --default-character-set=utf8mb4'
 
 db_dump:
 	docker run --name mysqldump-shell \
 	-v ${DB_SEED_DIR}:/Seed \
-	--rm mysql sh -c 'exec mysqldump -h${DB_HOST} -P${DB_PORT} -u${DB_USER} -p${DB_PASSWORD} ${DB_DATABASE} > ${DB_SEED_FILE}'
+	--rm mysql sh -c 'exec mysqldump -h${DB_HOST} -P${DB_PORT} -u${DB_USER} -p${DB_PASSWORD} ${DB_DATABASE} --default-character-set=utf8mb4 > ${DB_SEED_FILE}'
 
 db_stop:
 	@docker stop ${DB_CONTAINER_NAME} || true && docker rm ${DB_CONTAINER_NAME} || true
