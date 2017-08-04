@@ -82,21 +82,9 @@ public class Handlers {
         }
     }
 
-    /*
-
-    private func createNewActivity(_ data: MySQLRow, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
-        do {
-            let insertQuery = MySQLQueryBuilder()
-                .insert(data: data, table: "activities")
-
-            let _ = executeQuery(insertQuery, connection: connection)
-            try response.send(json: JSON(["status": 201, "message": "resource created"])).status(.created).end()
-        }
-    }
-
     // MARK: PUT
 
-    public func onUpdateActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
+    public func putActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         guard let body = request.body, case let .json(json) = body else {
             Log.error("Body contains invalid JSON")
@@ -110,28 +98,37 @@ public class Handlers {
             return
         }
 
-        let tempActivity = Activity(id: Int(id), name: json["name"].string,
-            emoji: json["emoji"].string, description: json["description"].string,
-            genre: json["genre"].string, minParticipants: json["min_participants"].int,
-            maxParticipants: json["max_participants"].int, createdAt: nil, updatedAt: nil)
-        let data = tempActivity.toDataMySQLRow()
+        let updateActivity = Activity(
+            id: Int(id), 
+            name: json["name"].string,
+            emoji: json["emoji"].string, 
+            description: json["description"].string,
+            genre: json["genre"].string, 
+            minParticipants: json["min_participants"].int,
+            maxParticipants: json["max_participants"].int, 
+            createdAt: nil, 
+            updatedAt: nil)
+        
+        let missingParameters = updateActivity.validate()
 
-        do {
-            if let connection = try connectionPool.getConnection() {
-                defer { connectionPool.releaseConnection(connection) }
-                try updateActivityWithID(id, data: data.0, connection: connection, response: response)
-            } else {
-                try response.status(.internalServerError).end()
-            }
+        if missingParameters.count != 0 {
+            Log.error("parameters missing \(missingParameters)")
+            try response.send(json: JSON(["message": "parameters missing \(missingParameters)"]))
+                .status(.badRequest).end()
+            return
         }
-    }
 
-    private func updateActivityWithID(_ id: String, data: MySQLRow, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
+        try safeDBQuery(response: response) {
+            (data: DataAccess) in 
+            try data.updateActivity(updateActivity)
+            
+            try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
+        }
     }
 
     // MARK: DELETE
 
-    public func onDeleteActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
+    public func deleteActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         guard let id = request.parameters["id"] else {
             Log.error("id (path parameter) missing")
@@ -139,27 +136,13 @@ public class Handlers {
             return
         }
 
-        do {
-            if let connection = try connectionPool.getConnection() {
-                defer { connectionPool.releaseConnection(connection) }
-                try deleteActivityWithID(id, connection: connection, response: response)
-            } else {
-                try response.status(.internalServerError).end()
-            }
+        try safeDBQuery(response: response) {
+            (data: DataAccess) in 
+            try data.deleteActivity(withID: id)
+
+            try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
         }
     }
-
-    private func deleteActivityWithID(_ id: String, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
-        do {
-            let deleteQuery = MySQLQueryBuilder()
-                .delete(fromTable: "activities").wheres(statement: "WHERE Id=?", parameters: "\(id)")
-
-            let _ = executeQuery(deleteQuery, connection: connection)
-            try response.send(json: JSON(["status": 204, "message": "resource deleted"])).status(.noContent).end()
-        }
-    }
-*/
-
 
     // execute queries safely
     private func safeDBQuery(response: RouterResponse, block: @escaping ((_: DataAccess) throws -> Void)) throws {

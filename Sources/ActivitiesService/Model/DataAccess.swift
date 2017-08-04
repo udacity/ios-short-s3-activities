@@ -19,13 +19,21 @@ class DataAccess {
         let _ = try connection.execute(builder: insertQuery)
     }
 
-    func updateActivity(id: String, data: MySQLRow) throws {
+    func updateActivity(_ activity: Activity) throws {
         let updateQuery = MySQLQueryBuilder()
-                .update(data: data, table: "activities")
-                .wheres(statement: "WHERE Id=?", parameters: "\(id)")
+                .update(data: activity.toMySQLRow(), table: "activities")
+                .wheres(statement: "WHERE Id=?", parameters: "\(activity.id)")
 
         let _ = try connection.execute(builder: updateQuery)
     } 
+
+    func deleteActivity(withID id: String) throws {
+        let deleteQuery = MySQLQueryBuilder()
+                .delete(fromTable: "activities")
+                .wheres(statement: "WHERE Id=?", parameters: "\(id)")
+
+        let _ = try connection.execute(builder: deleteQuery)
+    }
     
     func getActivities(withID id: String) throws -> [Activity]? {
         let select = selectActivities.wheres(statement:"WHERE Id=?", parameters: id)

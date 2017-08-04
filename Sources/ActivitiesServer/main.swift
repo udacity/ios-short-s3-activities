@@ -44,11 +44,11 @@ router.get("/activities/:id", handler: handlers.getActivities)
 router.post("/*", middleware: CheckRequestMiddleware(method: .post))
 router.post("/activities", handler: handlers.postActivity)
 
-//router.put("/*", middleware: CheckRequestMiddleware(method: .put))
-//router.put("/activities/:id", handler: handlers.onUpdateActivity)
+router.put("/*", middleware: CheckRequestMiddleware(method: .put))
+router.put("/activities/:id", handler: handlers.putActivity)
 
-//router.delete("/*", middleware: CheckRequestMiddleware(method: .delete))
-//router.delete("/activities/:id", handler: handlers.onDeleteActivity)
+router.delete("/*", middleware: CheckRequestMiddleware(method: .delete))
+router.delete("/activities/:id", handler: handlers.deleteActivity)
 
 // Add an HTTP server and connect it to the router
 Kitura.addHTTPServer(onPort: 8080, with: router)
