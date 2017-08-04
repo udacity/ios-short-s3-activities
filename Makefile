@@ -81,10 +81,14 @@ web_functional_test_docker:
 # Database Container
 # ===================
 db_run: db_stop
-	docker run --name ${DB_CONTAINER_NAME} \
-	-v ${DB_DATA_DIR}:/var/lib/mysql \
+	docker run \
+	-d \
+	--name ${DB_CONTAINER_NAME} \
 	-e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
-	-d --expose ${DB_PORT} ${DB_IMAGE} --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+	--expose ${DB_PORT} \
+	-p ${DB_PORT}:${DB_PORT} \
+	${DB_IMAGE} \
+	--character-set-server=utf8mb4 --collation-server=utf8mb4_bin
 
 db_run_clean: db_stop db_clean
 	docker run --name ${DB_CONTAINER_NAME} \
@@ -93,10 +97,16 @@ db_run_clean: db_stop db_clean
 	-d --expose ${DB_PORT} ${DB_IMAGE} --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
 
 db_run_seed: db_stop db_clean
-	docker run --name ${DB_CONTAINER_NAME} \
-	-v ${DB_SEED_DIR}:/docker-entrypoint-initdb.d -v ${DB_DATA_DIR}:/var/lib/mysql \
-	-e MYSQL_DATABASE=${DB_DATABASE} -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
-	-d --expose ${DB_PORT} ${DB_IMAGE} --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+	docker run \
+	-d \
+	--name ${DB_CONTAINER_NAME} \
+	-e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
+	-e MYSQL_DATABASE=${DB_DATABASE} \
+	--expose ${DB_PORT} \
+	-p ${DB_PORT}:${DB_PORT} \
+	-v ${DB_SEED_DIR}:/docker-entrypoint-initdb.d \
+	${DB_IMAGE} \
+	--character-set-server=utf8mb4 --collation-server=utf8mb4_bin
 
 db_connect_bash:
 	docker exec -it ${DB_CONTAINER_ID} /bin/bash

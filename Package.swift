@@ -12,8 +12,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/IBM-Swift/Kitura.git", from: "1.7.0"),
         .package(url: "https://github.com/IBM-Swift/HeliumLogger.git", from: "1.0.0"),
-        //.package(url: "https://github.com/nicholasjackson/swift-mysql.git", from: "1.1.0"),
-        .package(url: "https://github.com/jarrodparkes/swift-mysql.git", .branch("master")),
+        .package(url: "https://github.com/nicholasjackson/swift-mysql.git", from: "1.2.0"),
+        //.package(url: "https://github.com/jarrodparkes/swift-mysql.git", .branch("master")),
 
         // test imports
         .package(url: "https://github.com/nicholasjackson/kitura-http-test.git", from: "0.2.0")

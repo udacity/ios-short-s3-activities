@@ -2,7 +2,7 @@ import Foundation
 import LoggerAPI
 import MySQL
 
-public extension MySQLResult {
+public extension MySQLResultProtocol {
 
     public func toActivities() -> [Activity] {
 

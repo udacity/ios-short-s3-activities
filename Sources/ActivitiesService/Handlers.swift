@@ -28,52 +28,25 @@ public class Handlers {
 
     // MARK: GET
 
-    public func onGetActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
-        do {
-            if let connection = try connectionPool.getConnection() {
-                defer { connectionPool.releaseConnection(connection) }
-                try getActivity(withID: nil, connection: connection, response: response)
-            } else {
-                try response.status(.internalServerError).end()
-            }
-        }
-    }
+    public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
-    public func onGetActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
+        let id = request.parameters["id"]
+        try safeDBQuery(response: response) {
+            (data: DataAccess) in
 
-        guard let id = request.parameters["id"] else {
-            Log.error("Parameters missing")
-            try response.status(.badRequest).end()
-            return
-        }
-
-        do {
-            if let connection = try connectionPool.getConnection() {
-                defer { connectionPool.releaseConnection(connection) }
-                try getActivity(withID: id, connection: connection, response: response)
-            } else {
-                try response.status(.internalServerError).end()
-            }
-        }
-    }
-
-    private func getActivity(withID id: String? = nil, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
-        do {
-            let selectAllQuery = MySQLQueryBuilder()
-                .select(fields: ["id", "name", "emoji", "description", "genre",
-                "min_participants", "max_participants", "created_at", "updated_at"], table: "activities")
+            var activities: [Activity]?
 
             if let id = id {
-                let query = selectAllQuery.wheres(statement: "WHERE Id=?", parameters: "\(id)")
-                let result = executeQuery(query, connection: connection)
-                try returnActivityResult(result, response: response)
+                activities = try data.getActivities(withID: id)
             } else {
-                let result = executeQuery(selectAllQuery, connection: connection)
-                try returnActivityResult(result, response: response)
+                activities = try data.getActivities()
             }
+            
+            try self.returnActivities(activities, response: response)
         }
     }
 
+     /*
     // MARK: POST
 
     public func onCreateActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
@@ -150,16 +123,6 @@ public class Handlers {
     }
 
     private func updateActivityWithID(_ id: String, data: MySQLRow, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
-        do {
-            let updateQuery = MySQLQueryBuilder()
-                .update(data: data, table: "activities")
-                .wheres(statement: "WHERE Id=?", parameters: "\(id)")
-
-            Log.info(updateQuery.build())
-
-            let _ = executeQuery(updateQuery, connection: connection)
-            try response.send(json: JSON(["status": 204, "message": "resource updated"])).status(.noContent).end()
-        }
     }
 
     // MARK: DELETE
@@ -191,28 +154,34 @@ public class Handlers {
             try response.send(json: JSON(["status": 204, "message": "resource deleted"])).status(.noContent).end()
         }
     }
+*/
 
-    // MARK: Utility
 
-    private func executeQuery(_ query: MySQLQueryBuilder, connection: MySQLConnectionProtocol) -> (MySQLResultProtocol?, error: MySQLError?) {
-        let client = MySQLClient(connection: connection)
-        return client.execute(builder: query)
+    // execute queries safely
+    private func safeDBQuery(response: RouterResponse, block: @escaping ((_: DataAccess) throws -> Void)) throws {
+        do {
+            try connectionPool.getConnection() {
+                (connection: MySQLConnectionProtocol) in
+                let dataAccess = DataAccess(connection: connection)
+                
+                try block(dataAccess)
+            }
+        } catch {
+            try returnException(error, response: response)
+        }
     }
 
-    private func returnActivityResult(_ result: (MySQLResultProtocol?, error: MySQLError?), response: RouterResponse) throws {
-
-        if let results = result.0 as? MySQLResult {
-            let activities = results.toActivities()
-
-            if activities.count > 0 {
-                try response.send(json: activities.toJSON()).status(.OK).end()
-            } else {
-                try response.send(json: JSON([:])).status(.notFound).end()
-            }
-        } else {
-            Log.error(result.1?.localizedDescription ?? "")
-            try response.status(.internalServerError).end()
+    private func returnActivities(_ result: [Activity]?, response: RouterResponse) throws {
+        guard let activities = result else {
+            try response.status(.notFound).end()
             return
         }
+
+        try response.send(json: activities.toJSON()).status(.OK).end()
+    }
+
+    private func returnException(_ error: Error, response: RouterResponse) throws {
+        Log.error(error.localizedDescription ?? "")
+        try response.status(.internalServerError).end()
     }
 }
