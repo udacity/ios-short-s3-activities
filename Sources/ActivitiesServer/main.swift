@@ -41,8 +41,8 @@ router.get("/*", middleware: CheckRequestMiddleware(method: .get))
 router.get("/activities", handler: handlers.getActivities)
 router.get("/activities/:id", handler: handlers.getActivities)
 
-//router.post("/*", middleware: CheckRequestMiddleware(method: .post))
-//router.post("/activities", handler: handlers.onCreateActivity)
+router.post("/*", middleware: CheckRequestMiddleware(method: .post))
+router.post("/activities", handler: handlers.postActivity)
 
 //router.put("/*", middleware: CheckRequestMiddleware(method: .put))
 //router.put("/activities/:id", handler: handlers.onUpdateActivity)

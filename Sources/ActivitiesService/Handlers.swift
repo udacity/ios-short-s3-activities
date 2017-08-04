@@ -46,10 +46,9 @@ public class Handlers {
         }
     }
 
-     /*
     // MARK: POST
 
-    public func onCreateActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
+    public func postActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         guard let body = request.body, case let .json(json) = body else {
             Log.error("Body contains invalid JSON")
@@ -57,28 +56,33 @@ public class Handlers {
             return
         }
 
-        let newActivity = Activity(id: nil, name: json["name"].string,
-            emoji: json["emoji"].string, description: json["description"].string,
-            genre: json["genre"].string, minParticipants: json["min_participants"].int,
-            maxParticipants: json["max_participants"].int, createdAt: nil, updatedAt: nil)
-        let data = newActivity.toDataMySQLRow()
-        let missingParameters = data.1
+        let newActivity = Activity(
+            id: nil, name: json["name"].string,
+            emoji: json["emoji"].string, 
+            description: json["description"].string,
+            genre: json["genre"].string, 
+            minParticipants: json["min_participants"].int,
+            maxParticipants: json["max_participants"].int, 
+            createdAt: nil, updatedAt: nil)
 
-        guard missingParameters.count == 0 else {
-            Log.error("parameters missing \(data.1)")
-            try response.send(json: JSON(["status": 400, "message": "parameters missing \(data.1)"])).status(.badRequest).end()
+        let missingParameters = newActivity.validate()
+
+        if missingParameters.count != 0 {
+            Log.error("parameters missing \(missingParameters)")
+            try response.send(json: JSON(["message": "parameters missing \(missingParameters)"]))
+                .status(.badRequest).end()
             return
         }
 
-        do {
-            if let connection = try connectionPool.getConnection() {
-                defer { connectionPool.releaseConnection(connection) }
-                try createNewActivity(data.0, connection: connection, response: response)
-            } else {
-                try response.status(.internalServerError).end()
-            }
+        try safeDBQuery(response: response) {
+            (data: DataAccess) in 
+            try data.createActivity(newActivity)
+            
+            try response.send(json: JSON(["message": "activity created"])).status(.created).end()
         }
     }
+
+    /*
 
     private func createNewActivity(_ data: MySQLRow, connection: MySQLConnectionProtocol, response: RouterResponse) throws {
         do {

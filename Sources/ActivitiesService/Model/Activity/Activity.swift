@@ -18,47 +18,64 @@ public struct Activity {
 // MARK: - Activity (MySQLRow)
 
 extension Activity {
-    func toDataMySQLRow() -> ([String: Any], [String]) {
+    func toMySQLRow() -> ([String: Any]) {
         var data = [String: Any]()
-        var missingParameters = [String]()
 
         if let name = name {
             data["name"] = name
-        } else {
-            missingParameters.append("name")
-        }
-
+        } 
+        
         if let emoji = emoji {
             data["emoji"] = emoji
-        } else {
-            missingParameters.append("emoji")
-        }
-
+        } 
+        
         if let description = description {
             data["description"] = description
-        } else {
-            missingParameters.append("description")
-        }
+        } 
 
         if let genre = genre {
             data["genre"] = genre
-        } else {
-            missingParameters.append("genre")
-        }
-
+        } 
+        
         if let minParticipants = minParticipants {
             data["min_participants"] = minParticipants
-        } else {
-            missingParameters.append("min_participants")
-        }
+        } 
 
         if let maxParticipants = maxParticipants {
             data["max_participants"] = maxParticipants
-        } else {
+        } 
+
+        return data
+    }
+
+    public func validate() -> [String] {
+        var missingParameters = [String]()
+
+        if name == nil {
+            missingParameters.append("name")
+        }
+
+        if emoji == nil {
+            missingParameters.append("emoji")
+        }
+
+        if description == nil {
+            missingParameters.append("description")
+        }
+
+        if genre == nil {
+            missingParameters.append("genre")
+        }
+
+        if minParticipants == nil {
+            missingParameters.append("min_participants")
+        }
+
+        if maxParticipants == nil {
             missingParameters.append("max_participants")
         }
 
-        return (data, missingParameters)
+        return missingParameters
     }
 }
 

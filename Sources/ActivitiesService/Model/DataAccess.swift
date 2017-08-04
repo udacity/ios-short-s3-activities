@@ -12,6 +12,13 @@ class DataAccess {
         self.connection = connection
     }
 
+    func createActivity(_ activity: Activity) throws {
+        let insertQuery = MySQLQueryBuilder()
+                .insert(data: activity.toMySQLRow(), table: "activities")
+
+        let _ = try connection.execute(builder: insertQuery)
+    }
+
     func updateActivity(id: String, data: MySQLRow) throws {
         let updateQuery = MySQLQueryBuilder()
                 .update(data: data, table: "activities")
