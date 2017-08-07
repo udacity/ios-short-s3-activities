@@ -19,8 +19,6 @@ connectionString.user = env["MYSQL_USER"] ?? "root"
 connectionString.password = env["MYSQL_PASSWORD"] ?? "password"
 connectionString.database = env["MYSQL_DATABASE"] ?? "game_night"
 
-Log.info(connectionString.host)
-
 // Create connection pool
 var pool = MySQLConnectionPool(connectionString: connectionString, poolSize: 10, defaultCharset: "utf8mb4")
 
@@ -31,22 +29,25 @@ let handlers = Handlers(connectionPool: pool)
 let router = Router()
 
 // Setup paths
-// TODO: Move into a controller object?
 router.all("/*", middleware: BodyParser())
 router.all("/*", middleware: AllRemoteOriginMiddleware())
 router.all("/*", middleware: LoggerMiddleware())
 router.options("/*", handler: handlers.getOptions)
 
+// GET
 router.get("/*", middleware: CheckRequestMiddleware(method: .get))
 router.get("/activities", handler: handlers.getActivities)
 router.get("/activities/:id", handler: handlers.getActivities)
 
+// POST
 router.post("/*", middleware: CheckRequestMiddleware(method: .post))
 router.post("/activities", handler: handlers.postActivity)
 
+// PUT
 router.put("/*", middleware: CheckRequestMiddleware(method: .put))
 router.put("/activities/:id", handler: handlers.putActivity)
 
+// DELETE
 router.delete("/*", middleware: CheckRequestMiddleware(method: .delete))
 router.delete("/activities/:id", handler: handlers.deleteActivity)
 

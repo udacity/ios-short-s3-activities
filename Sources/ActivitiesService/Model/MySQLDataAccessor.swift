@@ -1,16 +1,24 @@
 import MySQL
 
-class DataAccess {
+// MARK: - MySQLDataAccessor
+
+class MySQLDataAccessor {
+
+    // MARK: Properties
+
     let connection: MySQLConnectionProtocol
 
     let selectActivities = MySQLQueryBuilder()
             .select(fields: ["id", "name", "emoji", "description", "genre",
             "min_participants", "max_participants", "created_at", "updated_at"], table: "activities")
 
+    // MARK: Initializer
 
     init(connection: MySQLConnectionProtocol) {
         self.connection = connection
     }
+
+    // MARK: Queries
 
     func createActivity(_ activity: Activity) throws {
         let insertQuery = MySQLQueryBuilder()
@@ -25,7 +33,7 @@ class DataAccess {
                 .wheres(statement: "WHERE Id=?", parameters: "\(activity.id)")
 
         let _ = try connection.execute(builder: updateQuery)
-    } 
+    }
 
     func deleteActivity(withID id: String) throws {
         let deleteQuery = MySQLQueryBuilder()
@@ -34,14 +42,14 @@ class DataAccess {
 
         let _ = try connection.execute(builder: deleteQuery)
     }
-    
+
     func getActivities(withID id: String) throws -> [Activity]? {
         let select = selectActivities.wheres(statement:"WHERE Id=?", parameters: id)
-        
+
         guard let result = try connection.execute(builder: select) else {
             return nil
         }
-    
+
         return result.toActivities()
     }
 
@@ -49,7 +57,7 @@ class DataAccess {
         guard let result = try connection.execute(builder: selectActivities) else {
             return nil
         }
-    
+
         return result.toActivities()
     }
 }

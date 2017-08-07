@@ -5,11 +5,17 @@ import LoggerAPI
 
 public class CheckRequestMiddleware: RouterMiddleware {
 
+    // MARK: Properties
+
     let method: RouterMethod
+
+    // MARK: Initializer
 
     public init(method: RouterMethod) {
         self.method = method
     }
+
+    // MARK: RouterMiddleware
 
     public func handle(request: RouterRequest, response: RouterResponse, next: @escaping () -> Swift.Void) {
         do {
