@@ -56,7 +56,8 @@ public class Handlers {
         }
 
         let newActivity = Activity(
-            id: nil, name: json["name"].string,
+            id: nil,
+            name: json["name"].string,
             emoji: json["emoji"].string,
             description: json["description"].string,
             genre: json["genre"].string,
@@ -96,7 +97,7 @@ public class Handlers {
         }
 
         let updateActivity = Activity(
-            id: Int(id),
+            id: nil,
             name: json["name"].string,
             emoji: json["emoji"].string,
             description: json["description"].string,
@@ -116,7 +117,7 @@ public class Handlers {
         }
 
         try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
-            try data.updateActivity(updateActivity)
+            try data.updateActivity(updateActivity, withID: id)
             try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
         }
     }

@@ -27,10 +27,10 @@ class MySQLDataAccessor {
         let _ = try connection.execute(builder: insertQuery)
     }
 
-    func updateActivity(_ activity: Activity) throws {
+    func updateActivity(_ activity: Activity, withID id: String) throws {
         let updateQuery = MySQLQueryBuilder()
                 .update(data: activity.toMySQLRow(), table: "activities")
-                .wheres(statement: "WHERE Id=?", parameters: "\(activity.id)")
+                .wheres(statement: "WHERE Id=?", parameters: "\(id)")
 
         let _ = try connection.execute(builder: updateQuery)
     }
