@@ -59,7 +59,7 @@ web_build_run: web_build
 	./.build/debug/ActivitiesServer
 
 web_clean:
-	rm -rf .build	
+	rm -rf .build
 	rm Package.resolved
 
 web_unit_test:
@@ -87,6 +87,7 @@ db_run: db_stop
 	-e MYSQL_ROOT_PASSWORD=${DB_PASSWORD} \
 	--expose ${DB_PORT} \
 	-p ${DB_PORT}:${DB_PORT} \
+	-v ${DB_DATA_DIR}:/var/lib/mysql \
 	${DB_IMAGE} \
 	--character-set-server=utf8mb4 --collation-server=utf8mb4_bin
 
@@ -104,6 +105,7 @@ db_run_seed: db_stop db_clean
 	-e MYSQL_DATABASE=${DB_DATABASE} \
 	--expose ${DB_PORT} \
 	-p ${DB_PORT}:${DB_PORT} \
+	-v ${DB_DATA_DIR}:/var/lib/mysql \
 	-v ${DB_SEED_DIR}:/docker-entrypoint-initdb.d \
 	${DB_IMAGE} \
 	--character-set-server=utf8mb4 --collation-server=utf8mb4_bin
