@@ -1,7 +1,8 @@
-import Foundation
+import MySQL
 import Kitura
-import SwiftyJSON
 import LoggerAPI
+import Foundation
+import SwiftyJSON
 
 // MARK: - Handlers
 
@@ -160,7 +161,7 @@ public class Handlers {
     }
 
     private func returnException(_ error: Error, response: RouterResponse) throws {
-        Log.error(error.localizedDescription ?? "")
+        Log.error(error.localizedDescription)
         try response.status(.internalServerError).end()
     }
 }

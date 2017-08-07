@@ -1,5 +1,6 @@
-import Foundation
+import MySQL
 import LoggerAPI
+import Foundation
 
 // MARK: - MySQLResultProtocol (Activity)
 

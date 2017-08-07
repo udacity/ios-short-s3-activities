@@ -60,7 +60,7 @@ web_build_run: web_build
 
 web_clean:
 	rm -rf .build
-	rm Package.resolved
+	rm Package.pins
 
 web_unit_test:
 	$(TEST_COMMAND) -s ActivitiesTests.HandlersTests
