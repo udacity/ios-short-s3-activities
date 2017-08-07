@@ -20,7 +20,7 @@ DB_USER=root
 DB_PASSWORD=password
 
 # testing
-TEST_COMMAND=swift test -Xlinker -L/usr/local/lib
+TEST_COMMAND=TEST=true swift test -Xlinker -L/usr/local/lib
 
 # =============
 # Build Images
@@ -71,11 +71,21 @@ web_functional_test:
 
 web_unit_test_docker:
 	docker run --rm -v $(shell pwd):/src \
-	-w /src ${WEB_IMAGE} /bin/bash -c 'swift test -s ActivitiesTests.HandlersTests --build-path=/.build'
+	-w /src ${WEB_IMAGE} /bin/bash -c 'TEST=true swift test -s ActivitiesTests.HandlersTests --build-path=/.build'
 
 web_functional_test_docker:
 	docker run --rm -v $(shell pwd):/src \
-	-w /src ${WEB_IMAGE} /bin/bash -c 'swift test -s FunctionalTests.FunctionalTests --build-path=/.build'
+	-w /src ${WEB_IMAGE} /bin/bash -c 'TEST=true swift test -s FunctionalTests.FunctionalTests --build-path=/.build'
+
+release_build:
+	docker run -it --rm -v $(shell pwd):/src -w /src kitura-server /bin/bash -c \
+		"swift build -c release \
+		-Xlinker -L/usr/lib/swift/linux \
+		-Xlinker -L/usr/local/lib \
+		-Xswiftc -static-stdlib"
+	docker run -it --rm -v $(shell pwd):/src -w /src kitura-server /bin/bash -c \
+		"cp /usr/lib/swift/linux/*.so /src/linux_shared"
+	docker build -t activities-server -f Dockerfile-prod .
 
 # ===================
 # Database Container
