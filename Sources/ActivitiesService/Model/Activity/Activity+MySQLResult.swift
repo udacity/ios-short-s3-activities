@@ -1,6 +1,8 @@
-import Foundation
-import LoggerAPI
 import MySQL
+import LoggerAPI
+import Foundation
+
+// MARK: - MySQLResultProtocol (Activity)
 
 public extension MySQLResultProtocol {
 

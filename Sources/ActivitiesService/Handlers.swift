@@ -1,8 +1,8 @@
-import Foundation
-import Kitura
-import SwiftyJSON
-import LoggerAPI
 import MySQL
+import Kitura
+import LoggerAPI
+import Foundation
+import SwiftyJSON
 
 // MARK: - Handlers
 
@@ -31,8 +31,7 @@ public class Handlers {
     public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         let id = request.parameters["id"]
-        try safeDBQuery(response: response) {
-            (data: DataAccess) in
+        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
 
             var activities: [Activity]?
 
@@ -41,7 +40,7 @@ public class Handlers {
             } else {
                 activities = try data.getActivities()
             }
-            
+
             try self.returnActivities(activities, response: response)
         }
     }
@@ -57,12 +56,13 @@ public class Handlers {
         }
 
         let newActivity = Activity(
-            id: nil, name: json["name"].string,
-            emoji: json["emoji"].string, 
+            id: nil,
+            name: json["name"].string,
+            emoji: json["emoji"].string,
             description: json["description"].string,
-            genre: json["genre"].string, 
+            genre: json["genre"].string,
             minParticipants: json["min_participants"].int,
-            maxParticipants: json["max_participants"].int, 
+            maxParticipants: json["max_participants"].int,
             createdAt: nil, updatedAt: nil)
 
         let missingParameters = newActivity.validate()
@@ -74,10 +74,8 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) {
-            (data: DataAccess) in 
+        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
             try data.createActivity(newActivity)
-            
             try response.send(json: JSON(["message": "activity created"])).status(.created).end()
         }
     }
@@ -99,16 +97,16 @@ public class Handlers {
         }
 
         let updateActivity = Activity(
-            id: Int(id), 
+            id: nil,
             name: json["name"].string,
-            emoji: json["emoji"].string, 
+            emoji: json["emoji"].string,
             description: json["description"].string,
-            genre: json["genre"].string, 
+            genre: json["genre"].string,
             minParticipants: json["min_participants"].int,
-            maxParticipants: json["max_participants"].int, 
-            createdAt: nil, 
+            maxParticipants: json["max_participants"].int,
+            createdAt: nil,
             updatedAt: nil)
-        
+
         let missingParameters = updateActivity.validate()
 
         if missingParameters.count != 0 {
@@ -118,10 +116,8 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) {
-            (data: DataAccess) in 
-            try data.updateActivity(updateActivity)
-            
+        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
+            try data.updateActivity(updateActivity, withID: id)
             try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
         }
     }
@@ -136,22 +132,20 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) {
-            (data: DataAccess) in 
+        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
             try data.deleteActivity(withID: id)
-
             try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
         }
     }
 
+    // MARK: Utility
+
     // execute queries safely and return error on failure
-    private func safeDBQuery(response: RouterResponse, block: @escaping ((_: DataAccess) throws -> Void)) throws {
+    private func safeDBQuery(response: RouterResponse, block: @escaping ((_: MySQLDataAccessor) throws -> Void)) throws {
         do {
-            try connectionPool.getConnection() {
-                (connection: MySQLConnectionProtocol) in
-                let dataAccess = DataAccess(connection: connection)
-                
-                try block(dataAccess)
+            try connectionPool.getConnection() { (connection: MySQLConnectionProtocol) in
+                let dataAccessor = MySQLDataAccessor(connection: connection)
+                try block(dataAccessor)
             }
         } catch {
             try returnException(error, response: response)
@@ -168,7 +162,7 @@ public class Handlers {
     }
 
     private func returnException(_ error: Error, response: RouterResponse) throws {
-        Log.error(error.localizedDescription ?? "")
+        Log.error(error.localizedDescription)
         try response.status(.internalServerError).end()
     }
 }

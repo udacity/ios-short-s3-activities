@@ -6,7 +6,7 @@ let package = Package(
     name: "ActivitiesService",
 
     targets: [
-        Target(name: "ActivitiesService"), 
+        Target(name: "ActivitiesService"),
         Target(name: "ActivitiesServer", dependencies: ["ActivitiesService"]),
     ],
 
@@ -21,8 +21,8 @@ if ProcessInfo.processInfo.environment["TEST"] != nil {
     package.targets.append(Target(name: "ActivitiesTests", dependencies: ["ActivitiesService"]))
     package.targets.append(Target(name: "FunctionalTests"))
     package.dependencies.append(.Package(
-        url: "https://github.com/nicholasjackson/kitura-http-test.git", 
-        majorVersion: 0, 
+        url: "https://github.com/nicholasjackson/kitura-http-test.git",
+        majorVersion: 0,
         minor: 2)
     )
 }
