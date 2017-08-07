@@ -1,0 +1,18 @@
+FROM udacity/swift-base-mysql:latest
+
+MAINTAINER Jarrod Parkes <jarrod@udacity.com>
+
+RUN mkdir /application
+RUN useradd -ms /bin/bash swift
+
+# Add Swift foundation libraries
+COPY /linux/* /
+
+COPY .build/release/ActivitiesServer /application/ActivitiesServer
+COPY .build/release/libCHTTPParser.so /application/libCHTTPParser.so
+COPY ./linux/* /application/
+
+USER swift
+WORKDIR /application
+
+ENTRYPOINT '/application/ActivitiesServer'

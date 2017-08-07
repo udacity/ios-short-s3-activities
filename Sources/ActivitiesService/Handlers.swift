@@ -144,7 +144,7 @@ public class Handlers {
         }
     }
 
-    // execute queries safely
+    // execute queries safely and return error on failure
     private func safeDBQuery(response: RouterResponse, block: @escaping ((_: DataAccess) throws -> Void)) throws {
         do {
             try connectionPool.getConnection() {

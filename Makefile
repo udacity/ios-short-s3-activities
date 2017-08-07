@@ -77,6 +77,12 @@ web_functional_test_docker:
 	docker run --rm -v $(shell pwd):/src \
 	-w /src ${WEB_IMAGE} /bin/bash -c 'swift test -s FunctionalTests.FunctionalTests --build-path=/.build'
 
+release_build:
+	docker run -it --rm -v $(shell pwd):/src -w /src kitura-server /bin/bash -c \
+		"swift build -c release -Xlinker -L/usr/lib/swift/linux -Xlinker -L/usr/local/lib -Xlinker -lxml2 -Xswiftc -static-stdlib "
+	docker run -it --rm -v $(shell pwd):/src -w /src kitura-server /bin/bash -c "cp /usr/lib/swift/linux/*.so /src/linux_shared"
+	docker build -t activities-server -f Dockerfile-prod .
+
 # ===================
 # Database Container
 # ===================

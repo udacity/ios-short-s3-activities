@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "CEpoll",
+        "repositoryURL": "https://github.com/IBM-Swift/CEpoll.git",
+        "state": {
+          "branch": null,
+          "revision": "111cbcb0d2485d9c7eb07596a6903622504961e5",
+          "version": "0.1.0"
+        }
+      },
+      {
         "package": "HeliumLogger",
         "repositoryURL": "https://github.com/IBM-Swift/HeliumLogger.git",
         "state": {
@@ -29,21 +38,21 @@
         }
       },
       {
-        "package": "Kitura-TemplateEngine",
-        "repositoryURL": "https://github.com/IBM-Swift/Kitura-TemplateEngine.git",
-        "state": {
-          "branch": null,
-          "revision": "c209801c7d53c347750d063e8950cb2ccbf6ed2b",
-          "version": "1.7.1"
-        }
-      },
-      {
         "package": "Kitura-net",
         "repositoryURL": "https://github.com/IBM-Swift/Kitura-net.git",
         "state": {
           "branch": null,
           "revision": "b5c3b26321964978abb3b03230684a347a00a4b7",
           "version": "1.7.15"
+        }
+      },
+      {
+        "package": "Kitura-TemplateEngine",
+        "repositoryURL": "https://github.com/IBM-Swift/Kitura-TemplateEngine.git",
+        "state": {
+          "branch": null,
+          "revision": "c209801c7d53c347750d063e8950cb2ccbf6ed2b",
+          "version": "1.7.1"
         }
       },
       {
@@ -74,12 +83,21 @@
         }
       },
       {
-        "package": "SSLService",
-        "repositoryURL": "https://github.com/IBM-Swift/BlueSSLService.git",
+        "package": "OpenSSL",
+        "repositoryURL": "https://github.com/IBM-Swift/OpenSSL.git",
         "state": {
           "branch": null,
-          "revision": "9f5d0b37b7856c502873223544f37689484778bc",
-          "version": "0.12.47"
+          "revision": "740ca278df3f4698698810c6aabf3c6d09d682d6",
+          "version": "0.3.6"
+        }
+      },
+      {
+        "package": "Signals",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueSignals.git",
+        "state": {
+          "branch": null,
+          "revision": "99ac410f8ad4a75f0ec9a9d72512d5028e804253",
+          "version": "0.9.48"
         }
       },
       {
@@ -92,12 +110,12 @@
         }
       },
       {
-        "package": "SwiftyJSON",
-        "repositoryURL": "https://github.com/IBM-Swift/SwiftyJSON.git",
+        "package": "SSLService",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueSSLService.git",
         "state": {
           "branch": null,
-          "revision": "4c57d4680e2b3d7be0e7c36737f99b6b36f09aac",
-          "version": "16.0.1"
+          "revision": "9f5d0b37b7856c502873223544f37689484778bc",
+          "version": "0.12.47"
         }
       },
       {
@@ -107,6 +125,15 @@
           "branch": null,
           "revision": "7354cab9c38aa016a8bb07a9678f64878b4d5752",
           "version": "0.1.0"
+        }
+      },
+      {
+        "package": "SwiftyJSON",
+        "repositoryURL": "https://github.com/IBM-Swift/SwiftyJSON.git",
+        "state": {
+          "branch": null,
+          "revision": "4c57d4680e2b3d7be0e7c36737f99b6b36f09aac",
+          "version": "16.0.1"
         }
       }
     ]
