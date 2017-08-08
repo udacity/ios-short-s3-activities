@@ -28,114 +28,40 @@ public class Handlers {
 
     // MARK: GET
 
-    public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
+    public func getExample(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
-        let id = request.parameters["id"]
+        guard let id = request.parameters["id"] else {
+            Log.error("id (path parameter) missing")
+            try response.status(.badRequest).end()
+            return
+        }
+
         try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
-
-            var activities: [Activity]?
-
-            if let id = id {
-                activities = try data.getActivities(withID: id)
-            } else {
-                activities = try data.getActivities()
-            }
-
+            var activities = try data.getExample(withID: id)
             try self.returnActivities(activities, response: response)
         }
+    }
+
+    public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
+        // TODO: Add implementation.
     }
 
     // MARK: POST
 
     public func postActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
-
-        guard let body = request.body, case let .json(json) = body else {
-            Log.error("Body contains invalid JSON")
-            try response.status(.badRequest).end()
-            return
-        }
-
-        let newActivity = Activity(
-            id: nil,
-            name: json["name"].string,
-            emoji: json["emoji"].string,
-            description: json["description"].string,
-            genre: json["genre"].string,
-            minParticipants: json["min_participants"].int,
-            maxParticipants: json["max_participants"].int,
-            createdAt: nil, updatedAt: nil)
-
-        let missingParameters = newActivity.validate()
-
-        if missingParameters.count != 0 {
-            Log.error("parameters missing \(missingParameters)")
-            try response.send(json: JSON(["message": "parameters missing \(missingParameters)"]))
-                .status(.badRequest).end()
-            return
-        }
-
-        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
-            try data.createActivity(newActivity)
-            try response.send(json: JSON(["message": "activity created"])).status(.created).end()
-        }
+        // TODO: Add implementation.
     }
 
     // MARK: PUT
 
     public func putActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
-
-        guard let body = request.body, case let .json(json) = body else {
-            Log.error("Body contains invalid JSON")
-            try response.status(.badRequest).end()
-            return
-        }
-
-        guard let id = request.parameters["id"] else {
-            Log.error("id (path parameter) missing")
-            try response.status(.badRequest).end()
-            return
-        }
-
-        let updateActivity = Activity(
-            id: nil,
-            name: json["name"].string,
-            emoji: json["emoji"].string,
-            description: json["description"].string,
-            genre: json["genre"].string,
-            minParticipants: json["min_participants"].int,
-            maxParticipants: json["max_participants"].int,
-            createdAt: nil,
-            updatedAt: nil)
-
-        let missingParameters = updateActivity.validate()
-
-        if missingParameters.count != 0 {
-            Log.error("parameters missing \(missingParameters)")
-            try response.send(json: JSON(["message": "parameters missing \(missingParameters)"]))
-                .status(.badRequest).end()
-            return
-        }
-
-        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
-            try data.updateActivity(updateActivity, withID: id)
-            try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
-        }
+        // TODO: Add implementation.
     }
 
     // MARK: DELETE
 
     public func deleteActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
-
-        guard let id = request.parameters["id"] else {
-            Log.error("id (path parameter) missing")
-            try response.status(.badRequest).end()
-            return
-        }
-
-        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
-            try data.deleteActivity(withID: id)
-            try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
-        }
+        // TODO: Add implementation.
     }
 
     // MARK: Utility
