@@ -31,14 +31,14 @@ public class Handlers {
     public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         let id = request.parameters["id"]
-        try safeDBQuery(response: response) { (data: ActivityMySQLDataAccessor) in
+        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
 
             var activities: [Activity]?
 
             if let id = id {
-                activities = try data.getActivities(withID: id)
+                activities = try accessor.getActivities(withID: id)
             } else {
-                activities = try data.getActivities()
+                activities = try accessor.getActivities()
             }
 
             try self.returnActivities(activities, response: response)
@@ -74,8 +74,8 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (data: ActivityMySQLDataAccessor) in
-            try data.createActivity(newActivity)
+        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
+            try accessor.createActivity(newActivity)
             try response.send(json: JSON(["message": "activity created"])).status(.created).end()
         }
     }
@@ -116,8 +116,8 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (data: ActivityMySQLDataAccessor) in
-            try data.updateActivity(updateActivity, withID: id)
+        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
+            try accessor.updateActivity(updateActivity, withID: id)
             try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
         }
     }
@@ -132,8 +132,8 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (data: ActivityMySQLDataAccessor) in
-            try data.deleteActivity(withID: id)
+        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
+            try accessor.deleteActivity(withID: id)
             try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
         }
     }
