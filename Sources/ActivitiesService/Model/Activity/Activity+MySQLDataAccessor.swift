@@ -1,4 +1,5 @@
 import MySQL
+import LoggerAPI
 
 // MARK: - ActivityMySQLDataAccessor
 
@@ -18,18 +19,21 @@ class ActivityMySQLDataAccessor {
 
     func createActivity(_ activity: Activity) throws {
         // TODO: Add implementation.
+        // Execute insert query.
     }
 
     func updateActivity(_ activity: Activity, withID id: String) throws {
         // TODO: Add implementation.
+        // Execute update query (for specific id).
     }
 
     func deleteActivity(withID id: String) throws {
         // TODO: Add implementation.
+        // Execute delete query (for specific id).
     }
 
     func getExample(withID id: String) throws -> [Activity]? {
-        guard let result = try connection.execute(query: "SELECT * FROM activities WHERE id=\(id)") else {
+        guard let result = try connection.execute(query: "SELECT name FROM activities WHERE id=\(id)") else {
             return nil
         }
 
@@ -38,11 +42,13 @@ class ActivityMySQLDataAccessor {
 
     func getActivities(withID id: String) throws -> [Activity]? {
         // TODO: Add implementation.
+        // Execute select query (for specific id).
         return nil
     }
 
     func getActivities() throws -> [Activity]? {
         // TODO: Add implementation.
+        // Execute select query (get all activities).
         return nil
     }
 }

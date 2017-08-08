@@ -7,7 +7,7 @@ import Foundation
 public extension MySQLResultProtocol {
 
     public func toActivities() -> [Activity] {
-
+                
         var activities = [Activity]()
 
         while case let row? = self.nextResult() {

@@ -36,32 +36,48 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
-            var activities = try data.getExample(withID: id)
+        try safeDBQuery(response: response) { (data: ActivityMySQLDataAccessor) in
+            let activities = try data.getExample(withID: id)
+            Log.error("\(activities!)")
             try self.returnActivities(activities, response: response)
         }
     }
 
     public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
         // TODO: Add implementation.
+        // Check for id (if exists).
+        // Perform selection query, get activities.
+        // Return activities.
     }
 
     // MARK: POST
 
     public func postActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
         // TODO: Add implementation.
+        // Check for request body.
+        // Validate request body has all activity parameters.
+        // Perform insertion query.
+        // Return success/failure.
     }
 
     // MARK: PUT
 
     public func putActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
         // TODO: Add implementation.
+        // Check for id.
+        // Check for request body.
+        // Validate request body has all activity parameters.
+        // Perform update query.
+        // Return success/failure.
     }
 
     // MARK: DELETE
 
     public func deleteActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
         // TODO: Add implementation.
+        // Check for id.
+        // Perform delete query.
+        // Return success/failure.
     }
 
     // MARK: Utility

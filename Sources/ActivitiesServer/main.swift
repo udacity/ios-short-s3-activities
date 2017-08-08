@@ -12,8 +12,9 @@ setbuf(stdout, nil)
 HeliumLogger.use(.info)
 
 // Create connection string (use env variables, if exists)
+// TODO: Inject environment variables.
 let env = ProcessInfo.processInfo.environment
-var connectionString = MySQLConnectionString(host: "172.17.0.3")
+var connectionString = MySQLConnectionString(host: "172.17.0.2")
 connectionString.port = 3306
 connectionString.user = "root"
 connectionString.password = "password"
@@ -36,6 +37,7 @@ router.options("/*", handler: handlers.getOptions)
 
 // GET
 router.get("/*", middleware: CheckRequestMiddleware(method: .get))
+router.get("/example/:id", handler: handlers.getExample)
 router.get("/activities", handler: handlers.getActivities)
 router.get("/activities/:id", handler: handlers.getActivities)
 
