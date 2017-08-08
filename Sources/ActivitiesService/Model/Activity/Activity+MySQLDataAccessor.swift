@@ -1,8 +1,8 @@
 import MySQL
 
-// MARK: - MySQLDataAccessor
+// MARK: - ActivityMySQLDataAccessor
 
-class MySQLDataAccessor {
+class ActivityMySQLDataAccessor {
 
     // MARK: Properties
 

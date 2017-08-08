@@ -31,7 +31,7 @@ public class Handlers {
     public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         let id = request.parameters["id"]
-        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
+        try safeDBQuery(response: response) { (data: ActivityMySQLDataAccessor) in
 
             var activities: [Activity]?
 
@@ -74,7 +74,7 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
+        try safeDBQuery(response: response) { (data: ActivityMySQLDataAccessor) in
             try data.createActivity(newActivity)
             try response.send(json: JSON(["message": "activity created"])).status(.created).end()
         }
@@ -116,7 +116,7 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
+        try safeDBQuery(response: response) { (data: ActivityMySQLDataAccessor) in
             try data.updateActivity(updateActivity, withID: id)
             try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
         }
@@ -132,7 +132,7 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
+        try safeDBQuery(response: response) { (data: ActivityMySQLDataAccessor) in
             try data.deleteActivity(withID: id)
             try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
         }
@@ -141,10 +141,10 @@ public class Handlers {
     // MARK: Utility
 
     // execute queries safely and return error on failure
-    private func safeDBQuery(response: RouterResponse, block: @escaping ((_: MySQLDataAccessor) throws -> Void)) throws {
+    private func safeDBQuery(response: RouterResponse, block: @escaping ((_: ActivityMySQLDataAccessor) throws -> Void)) throws {
         do {
             try connectionPool.getConnection() { (connection: MySQLConnectionProtocol) in
-                let dataAccessor = MySQLDataAccessor(connection: connection)
+                let dataAccessor = ActivityMySQLDataAccessor(connection: connection)
                 try block(dataAccessor)
             }
         } catch {
