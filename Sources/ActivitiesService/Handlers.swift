@@ -36,8 +36,8 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (data: ActivityMySQLDataAccessor) in
-            let activities = try data.getExample(withID: id)
+        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
+            let activities = try accessor.getExample(withID: id)
             Log.error("\(activities!)")
             try self.returnActivities(activities, response: response)
         }
