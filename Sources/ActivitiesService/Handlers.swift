@@ -176,7 +176,4 @@ public class Handlers {
             try response.status(.internalServerError).end()
         }
     }
-
-    private func returnActivities(_ result: [Activity]?, response: RouterResponse) throws {
-    }
 }
