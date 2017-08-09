@@ -20,41 +20,64 @@ class MySQLDataAccessor {
 
     // MARK: Queries
 
-    func createActivity(_ activity: Activity) throws {
+    func createActivity(_ activity: Activity) throws -> Bool {
         let insertQuery = MySQLQueryBuilder()
                 .insert(data: activity.toMySQLRow(), table: "activities")
 
-        let _ = try connection.execute(builder: insertQuery)
+        let result = try connection.execute(builder: insertQuery)
+
+        if result.affectedRows < 1 {
+            return false
+        }
+
+        return true
     }
 
-    func updateActivity(_ activity: Activity) throws {
+    func updateActivity(_ activity: Activity) throws -> Bool {
         let updateQuery = MySQLQueryBuilder()
                 .update(data: activity.toMySQLRow(), table: "activities")
-                .wheres(statement: "WHERE Id=?", parameters: "\(activity.id)")
+                .wheres(statement: "WHERE Id=?", parameters: "\(activity.id!)")
 
-        let _ = try connection.execute(builder: updateQuery)
+        let result = try connection.execute(builder: updateQuery)
+
+        if result.affectedRows < 1 {
+            return false
+        }
+
+        return true
     }
 
-    func deleteActivity(withID id: String) throws {
+    func deleteActivity(withID id: String) throws -> Bool {
         let deleteQuery = MySQLQueryBuilder()
                 .delete(fromTable: "activities")
                 .wheres(statement: "WHERE Id=?", parameters: "\(id)")
 
-        let _ = try connection.execute(builder: deleteQuery)
+        let result = try connection.execute(builder: deleteQuery)
+        
+        if result.affectedRows < 1 {
+            return false
+        }
+
+        return true
     }
 
     func getActivities(withID id: String) throws -> [Activity]? {
         let select = selectActivities.wheres(statement:"WHERE Id=?", parameters: id)
 
-        guard let result = try connection.execute(builder: select) else {
+        let result = try connection.execute(builder: select)
+        let activities = result.toActivities()
+
+        if activities.count == 0 {
             return nil
         }
 
-        return result.toActivities()
+        return activities
     }
 
     func getActivities() throws -> [Activity]? {
-        guard let result = try connection.execute(builder: selectActivities) else {
+        let result = try connection.execute(builder: selectActivities)
+        
+        if result.affectedRows == 0 {
             return nil
         }
 

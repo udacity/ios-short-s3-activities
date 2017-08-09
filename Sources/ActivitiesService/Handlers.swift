@@ -41,8 +41,15 @@ public class Handlers {
                 activities = try data.getActivities()
             }
 
-            try self.returnActivities(activities, response: response)
+            if activities == nil {
+                try response.status(.notFound).end()
+                return
+            }
+
+            try response.send(json: activities!.toJSON()).status(.OK).end()
+
         }
+
     }
 
     // MARK: POST
@@ -74,8 +81,14 @@ public class Handlers {
         }
 
         try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
-            try data.createActivity(newActivity)
-            try response.send(json: JSON(["message": "activity created"])).status(.created).end()
+            let success = try data.createActivity(newActivity)
+
+            if success {
+                try response.send(json: JSON(["message": "activity created"])).status(.created).end()
+                return
+            }
+
+            try response.status(.notModified).end()
         }
     }
 
@@ -116,9 +129,15 @@ public class Handlers {
         }
 
         try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
-            try data.updateActivity(updateActivity)
-            try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
+            let status = try data.updateActivity(updateActivity)
+
+            if status {
+                try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
+            }
+                
+            try response.status(.notModified).end()
         }
+
     }
 
     // MARK: DELETE
@@ -132,8 +151,13 @@ public class Handlers {
         }
 
         try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
-            try data.deleteActivity(withID: id)
-            try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
+            let status = try data.deleteActivity(withID: id)
+            
+            if status {
+                try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
+            }
+
+            try response.status(.notModified).end()
         }
     }
 
@@ -147,21 +171,11 @@ public class Handlers {
                 try block(dataAccessor)
             }
         } catch {
-            try returnException(error, response: response)
+            Log.error(error.localizedDescription)
+            try response.status(.internalServerError).end()
         }
     }
 
     private func returnActivities(_ result: [Activity]?, response: RouterResponse) throws {
-        guard let activities = result else {
-            try response.status(.notFound).end()
-            return
-        }
-
-        try response.send(json: activities.toJSON()).status(.OK).end()
-    }
-
-    private func returnException(_ error: Error, response: RouterResponse) throws {
-        Log.error(error.localizedDescription)
-        try response.status(.internalServerError).end()
     }
 }
