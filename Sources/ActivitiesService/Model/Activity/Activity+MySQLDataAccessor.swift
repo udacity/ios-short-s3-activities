@@ -26,7 +26,7 @@ class ActivityMySQLDataAccessor {
 
         let result = try connection.execute(builder: insertQuery)
 
-        return result.affectedRows > 1
+        return result.affectedRows > 0
     }
 
     func updateActivity(_ activity: Activity) throws -> Bool {
@@ -36,7 +36,7 @@ class ActivityMySQLDataAccessor {
 
         let result = try connection.execute(builder: updateQuery)
 
-        return result.affectedRows > 1
+        return result.affectedRows > 0
     }
 
     func deleteActivity(withID id: String) throws -> Bool {
@@ -46,7 +46,7 @@ class ActivityMySQLDataAccessor {
 
         let result = try connection.execute(builder: deleteQuery)
 
-        return result.affectedRows > 1
+        return result.affectedRows > 0
     }
 
     func getActivities(withID id: String) throws -> [Activity]? {
@@ -55,20 +55,13 @@ class ActivityMySQLDataAccessor {
         let result = try connection.execute(builder: select)
         let activities = result.toActivities()
 
-        if activities.count == 0 {
-            return nil
-        }
-
-        return activities
+        return (activities.count == 0) ? nil : activities
     }
 
     func getActivities() throws -> [Activity]? {
         let result = try connection.execute(builder: selectActivities)
+        let activities = result.toActivities()
 
-        if result.affectedRows == 0 {
-            return nil
-        }
-
-        return result.toActivities()
+        return (activities.count == 0) ? nil : activities
     }
 }

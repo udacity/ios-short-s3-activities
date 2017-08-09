@@ -81,8 +81,8 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
-            let success = try data.createActivity(newActivity)
+        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
+            let success = try accessor.createActivity(newActivity)
 
             if success {
                 try response.send(json: JSON(["message": "activity created"])).status(.created).end()
@@ -110,7 +110,7 @@ public class Handlers {
         }
 
         let updateActivity = Activity(
-            id: nil,
+            id: Int(id),
             name: json["name"].string,
             emoji: json["emoji"].string,
             description: json["description"].string,
@@ -129,8 +129,8 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
-            let status = try data.updateActivity(updateActivity)
+        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
+            let status = try accessor.updateActivity(updateActivity)
 
             if status {
                 try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
@@ -151,8 +151,8 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
-            let status = try data.deleteActivity(withID: id)
+        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
+            let status = try accessor.deleteActivity(withID: id)
 
             if status {
                 try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
