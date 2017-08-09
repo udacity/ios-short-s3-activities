@@ -37,7 +37,8 @@ class ActivityMySQLDataAccessor {
             return nil
         }
 
-        return result.toActivities()
+        let activities = result.toActivities()
+        return (activities.count == 0) ? nil : activities
     }
 
     func getActivities(withID id: String) throws -> [Activity]? {

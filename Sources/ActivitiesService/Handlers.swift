@@ -37,8 +37,11 @@ public class Handlers {
         }
 
         try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
-            let activities = try accessor.getExample(withID: id)            
-            try self.returnActivities(activities, response: response)
+            if let activities = try accessor.getExample(withID: id) {
+                try response.send(json: activities.toJSON()).status(.OK).end()
+            }  else {
+                try response.status(.notFound).end()
+            }
         }
     }
 
@@ -89,21 +92,8 @@ public class Handlers {
                 try block(dataAccessor)
             }
         } catch {
-            try returnException(error, response: response)
+            Log.error(error.localizedDescription)
+            try response.status(.internalServerError).end()
         }
-    }
-
-    private func returnActivities(_ result: [Activity]?, response: RouterResponse) throws {
-        guard let activities = result else {
-            try response.status(.notFound).end()
-            return
-        }
-
-        try response.send(json: activities.toJSON()).status(.OK).end()
-    }
-
-    private func returnException(_ error: Error, response: RouterResponse) throws {
-        Log.error(error.localizedDescription)
-        try response.status(.internalServerError).end()
     }
 }
