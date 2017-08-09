@@ -13,7 +13,7 @@ HeliumLogger.use(.info)
 
 // Create connection string (use env variables, if exists)
 let env = ProcessInfo.processInfo.environment
-var connectionString = MySQLConnectionString(host: "172.17.0.3")
+var connectionString = MySQLConnectionString(host: "172.17.0.2")
 connectionString.port = 3306
 connectionString.user = "root"
 connectionString.password = "password"
@@ -25,7 +25,12 @@ var pool = MySQLConnectionPool(connectionString: connectionString, poolSize: 10,
 // Get a connection, insert a dummy activity
 do {
     try pool.getConnection() { (connection: MySQLConnectionProtocol) in
-        let _ = try connection.execute(query: "INSERT INTO activities (name, genre, description, emoji, min_participants, max_participants) VALUES ('New Activity', 'Puzzle', 'A simple dummy game.', '🎲', '2', '4');")
+        let result = try connection.execute(query: "INSERT INTO activities (name, genre, description, emoji, min_participants, max_participants) VALUES ('New Activity', 'Puzzle', 'A simple dummy game.', '🎲', '2', '4');")
+        if result.affectedRows > 0 {
+            Log.info("activity inserted")
+        } else {
+            Log.error("activity not inserted")
+        }
     }
 } catch {
     Log.error(error.localizedDescription)
