@@ -41,8 +41,15 @@ public class Handlers {
                 activities = try accessor.getActivities()
             }
 
-            try self.returnActivities(activities, response: response)
+            if activities == nil {
+                try response.status(.notFound).end()
+                return
+            }
+
+            try response.send(json: activities!.toJSON()).status(.OK).end()
+
         }
+
     }
 
     // MARK: POST
@@ -74,9 +81,15 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
-            try accessor.createActivity(newActivity)
-            try response.send(json: JSON(["message": "activity created"])).status(.created).end()
+        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
+            let success = try data.createActivity(newActivity)
+
+            if success {
+                try response.send(json: JSON(["message": "activity created"])).status(.created).end()
+                return
+            }
+
+            try response.status(.notModified).end()
         }
     }
 
@@ -116,10 +129,16 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
-            try accessor.updateActivity(updateActivity, withID: id)
-            try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
+        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
+            let status = try data.updateActivity(updateActivity)
+
+            if status {
+                try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
+            }
+
+            try response.status(.notModified).end()
         }
+
     }
 
     // MARK: DELETE
@@ -132,9 +151,14 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
-            try accessor.deleteActivity(withID: id)
-            try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
+        try safeDBQuery(response: response) { (data: MySQLDataAccessor) in
+            let status = try data.deleteActivity(withID: id)
+
+            if status {
+                try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
+            }
+
+            try response.status(.notModified).end()
         }
     }
 
@@ -148,21 +172,11 @@ public class Handlers {
                 try block(dataAccessor)
             }
         } catch {
-            try returnException(error, response: response)
+            Log.error(error.localizedDescription)
+            try response.status(.internalServerError).end()
         }
     }
 
     private func returnActivities(_ result: [Activity]?, response: RouterResponse) throws {
-        guard let activities = result else {
-            try response.status(.notFound).end()
-            return
-        }
-
-        try response.send(json: activities.toJSON()).status(.OK).end()
-    }
-
-    private func returnException(_ error: Error, response: RouterResponse) throws {
-        Log.error(error.localizedDescription)
-        try response.status(.internalServerError).end()
     }
 }
