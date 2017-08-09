@@ -33,11 +33,9 @@ class ActivityMySQLDataAccessor {
     }
 
     func getExample(withID id: String) throws -> [Activity]? {
-        guard let result = try connection.execute(query: "SELECT name FROM activities WHERE id=\(id)") else {
-            return nil
-        }
-
+        let result = try connection.execute(query: "SELECT name FROM activities WHERE id=\(id)")
         let activities = result.toActivities()
+        
         return (activities.count == 0) ? nil : activities
     }
 
