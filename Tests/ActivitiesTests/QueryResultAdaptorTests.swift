@@ -1,12 +1,14 @@
 import Foundation
 import XCTest
-import SwiftKuery
+@testable import MySQL
 
 public class QueryResultAdaptorTests: XCTestCase {
 
     public func testSQLResultReturnsActivity() {
-        let queryResult = QueryResult.resultSet(ResultSet(TestResultFetcher(numberOfRows: 2)))
+        let queryResult = MockMySQLResult()
+        queryResult.results = [["id": 123 as Any]]
+
         var activities = queryResult.toActivities()
-        XCTAssertEqual("abc123", activities[0].id)
+        XCTAssertEqual(123, activities[0].id)
     }
 }

@@ -77,10 +77,12 @@ class MySQLDataAccessor {
     func getActivities() throws -> [Activity]? {
         let result = try connection.execute(builder: selectActivities)
         
-        if result.affectedRows == 0 {
+        let activities = result.toActivities()
+
+        if activities.count == 0 {
             return nil
         }
 
-        return result.toActivities()
+        return activities
     }
 }
