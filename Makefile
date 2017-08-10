@@ -19,7 +19,9 @@ DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=password
 
-# testing
+# ========
+# Testing
+# ========
 TEST_COMMAND=swift test -Xlinker -L/usr/local/lib
 
 # =============
@@ -79,6 +81,10 @@ web_functional_test_docker: web_prep_test
 
 web_prep_test:
 	export TEST=true
+
+# ========================
+# Production Microservice
+# ========================
 
 release_build:
 	docker run -it --rm -v $(shell pwd):/src -w /src kitura-server /bin/bash -c \
