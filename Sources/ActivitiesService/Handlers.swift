@@ -57,8 +57,9 @@ public class Handlers {
     public func postActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         guard let body = request.body, case let .json(json) = body else {
-            Log.error("Body contains invalid JSON")
-            try response.status(.badRequest).end()
+            Log.error("body contains invalid JSON")
+            try response.send(json: JSON(["message": "body is missing JSON or JSON is invalid"]))
+                .status(.badRequest).end()
             return
         }
 
@@ -98,14 +99,16 @@ public class Handlers {
     public func putActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         guard let body = request.body, case let .json(json) = body else {
-            Log.error("Body contains invalid JSON")
-            try response.status(.badRequest).end()
+            Log.error("body contains invalid JSON")
+            try response.send(json: JSON(["message": "body is missing JSON or JSON is invalid"]))
+                .status(.badRequest).end()
             return
         }
 
         guard let id = request.parameters["id"] else {
             Log.error("id (path parameter) missing")
-            try response.status(.badRequest).end()
+            try response.send(json: JSON(["message": "id (path parameter) missing"]))
+                .status(.badRequest).end()
             return
         }
 
@@ -147,7 +150,8 @@ public class Handlers {
 
         guard let id = request.parameters["id"] else {
             Log.error("id (path parameter) missing")
-            try response.status(.badRequest).end()
+            try response.send(json: JSON(["message": "id (path parameter) missing"]))
+                .status(.badRequest).end()
             return
         }
 
