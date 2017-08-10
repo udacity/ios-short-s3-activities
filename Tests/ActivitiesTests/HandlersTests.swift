@@ -1,12 +1,11 @@
 import Foundation
 import XCTest
 import KituraNet
-import SwiftKuery
 
 @testable import KituraHTTPTest
 @testable import Kitura
 @testable import ActivitiesService
-@testable import SwiftKueryMock
+@testable import MySQL
 
 /*
   HandlersTests verify if the `Handlers` object functions correctly.
@@ -20,13 +19,15 @@ public class HandlersTests: XCTestCase {
     // MARK: from ActivitiesService
     var handlers: Handlers? // Request handler
 
-    // MARK: from SwiftKueryMock (Nic Jackson)
-    var connection: MockSQLConnection?
-    var connectionPool: ConnectionPool?
+    // MARK: from SwiftMySQL (Nic Jackson)
+    var connection: MockMySQLConnection?
+    var connectionPool: MockMySQLConnectionPool?
 
     // MARK: from KituraHTTPTest (Nic Jackson)
     var request: Request? // A stubbed request
-    var responseRecorder: ResponseRecorder? // A stubbed response that is "captured" instead of being output to the requester and stored in an internal buffer; this enables us to test responses
+    // A stubbed response that is "captured" instead of being output to the 
+    // requester and stored in an internal buffer; this enables us to test responses
+    var responseRecorder: ResponseRecorder? 
 
     public override func setUp() {
         request = Request()
@@ -41,61 +42,48 @@ public class HandlersTests: XCTestCase {
                 routerStack: routerStack,
                 request: routerRequest!)
 
-        connection = MockSQLConnection()
-        connectionPool = MockSQLConnection.createPool(connection!)
+        connection = MockMySQLConnection()
+
+        let connectionString = MySQLConnectionString(host: "127.0.0.1")
+        connectionPool = MockMySQLConnectionPool(connectionString: connectionString,
+                                                  poolSize: 1,
+                                                  defaultCharset: "utf8")
+        connectionPool!.getConnectionReturn = connection
 
         handlers = Handlers(connectionPool: connectionPool!)
     }
 
-    func testHTTPVerbsOtherThanGetReturnBadResponse() throws {
-        request!.method = "POST"
-        routerRequest = RouterRequest(request: request!)
-
-        // If the method is unsupported, then the response status should be set to badRequest
-        try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
-
-        XCTAssertEqual(HTTPStatusCode.badRequest, responseRecorder?.statusCode)
-    }
-
     func testQueriesDataBaseForActivities() throws {
-        request!.method = "GET"
         routerRequest = RouterRequest(request: request!)
 
         try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
 
-        XCTAssertEqual(1, connection!.calls.details["execute"]?.count)
+        XCTAssertTrue(connection!.executeBuilderCalled)
     }
 
     func testReturnsActivitiesOnSuccessfulQuery() throws {
         // setup
-        request!.method = "GET"
         routerRequest = RouterRequest(request: request!)
+        
         // setup expectation on the mock
-        connection!.calls.on(method: "execute", withArguments: [MatchAny(), MatchAny()]) {
-            arguments in
-
-            let callback = arguments![1] as! ((QueryResult) -> Void)
-            callback(.resultSet(ResultSet(TestResultFetcher(numberOfRows: 1))))
-        }
+        let mockResult = MockMySQLResult()
+        mockResult.results = [["id": 123 as Any]]
+        connection!.executeMySQLResultReturn = mockResult
 
         // execute
         try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
 
         // assert
         let body = responseRecorder!.jsonBody()
-        XCTAssertEqual("abc123", body[0]["id"])
+        XCTAssertEqual(123, body[0]["id"])
         XCTAssertEqual(HTTPStatusCode.OK,responseRecorder!.statusCode)
     }
 
     func testReturnsInternalServerErrorOnFailedQuery() throws {
-        request!.method = "GET"
         routerRequest = RouterRequest(request: request!)
-        connection!.calls.on(method: "execute", withArguments: [MatchAny(), MatchAny()]) {
-            arguments in
-
-            let callback = arguments![1] as! ((QueryResult) -> Void)
-            callback(.error(QueryError.noResult("Error in query execution.")))
-        }
+        
+        // setup expectation on the mock
+        connection!.executeMySQLErrorReturn = .UnableToExecuteQuery(message: "oops")
 
         try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
 
@@ -105,7 +93,6 @@ public class HandlersTests: XCTestCase {
     }
 
     func testReturnsNotFoundWhenNoActivitiesFromQuery() throws {
-        request!.method = "GET"
         routerRequest = RouterRequest(request: request!)
 
         // because we are not setting the expectation on the mock the callback
@@ -120,7 +107,6 @@ public class HandlersTests: XCTestCase {
 extension HandlersTests {
     static var allTests: [(String, (HandlersTests) -> () throws -> Void)] {
         return [
-            ("testHTTPVerbsOtherThanGetReturnBadResponse", testHTTPVerbsOtherThanGetReturnBadResponse),
             ("testQueriesDataBaseForActivities", testQueriesDataBaseForActivities),
             ("testReturnsActivitiesOnSuccessfulQuery", testReturnsActivitiesOnSuccessfulQuery),
             ("testReturnsInternalServerErrorOnFailedQuery", testReturnsInternalServerErrorOnFailedQuery),

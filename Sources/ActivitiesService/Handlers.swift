@@ -10,11 +10,11 @@ public class Handlers {
 
     // MARK: Properties
 
-    var connectionPool: MySQLConnectionPool
+    let connectionPool: MySQLConnectionPoolProtocol
 
     // MARK: Initializer
 
-    public init(connectionPool: MySQLConnectionPool) {
+    public init(connectionPool: MySQLConnectionPoolProtocol) {
         self.connectionPool = connectionPool
     }
 

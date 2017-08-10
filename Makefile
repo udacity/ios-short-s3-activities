@@ -20,7 +20,7 @@ DB_USER=root
 DB_PASSWORD=password
 
 # testing
-TEST_COMMAND=TEST=true swift test -Xlinker -L/usr/local/lib
+TEST_COMMAND=swift test -Xlinker -L/usr/local/lib
 
 # =============
 # Build Images
@@ -62,20 +62,23 @@ web_clean:
 	rm -rf .build
 	rm Package.pins
 
-web_unit_test:
+web_unit_test: web_prep_test
 	$(TEST_COMMAND) -s ActivitiesTests.HandlersTests
 	$(TEST_COMMAND) -s ActivitiesTests.QueryResultAdaptorTests
 
-web_functional_test:
+web_functional_test: web_prep_test
 	$(TEST_COMMAND) -s FunctionalTests.FunctionalTests
 
-web_unit_test_docker:
+web_unit_test_docker: web_prep_test
 	docker run --rm -v $(shell pwd):/src \
 	-w /src ${WEB_IMAGE} /bin/bash -c 'TEST=true swift test -s ActivitiesTests.HandlersTests --build-path=/.build'
 
-web_functional_test_docker:
+web_functional_test_docker: web_prep_test
 	docker run --rm -v $(shell pwd):/src \
 	-w /src ${WEB_IMAGE} /bin/bash -c 'TEST=true swift test -s FunctionalTests.FunctionalTests --build-path=/.build'
+
+web_prep_test:
+	export TEST=true
 
 release_build:
 	docker run -it --rm -v $(shell pwd):/src -w /src kitura-server /bin/bash -c \
