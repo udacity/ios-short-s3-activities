@@ -110,7 +110,7 @@ extension HandlersTests {
             ("testQueriesDataBaseForActivities", testQueriesDataBaseForActivities),
             ("testReturnsActivitiesOnSuccessfulQuery", testReturnsActivitiesOnSuccessfulQuery),
             ("testReturnsInternalServerErrorOnFailedQuery", testReturnsInternalServerErrorOnFailedQuery),
-            ("testReturnsNonFoundWhenNoActivitiesFromQuery", testReturnsNotFoundWhenNoActiviesFromQuery)
+            ("testReturnsNonFoundWhenNoActivitiesFromQuery", testReturnsNotFoundWhenNoActivitiesFromQuery)
        ]
     }
 }

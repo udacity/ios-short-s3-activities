@@ -20,7 +20,7 @@ jobs:
 
       - run: 
           name: Build Application
-          command: make build
+          command: make web_build
       
       - persist_to_workspace:
           root: /tmp/
@@ -42,7 +42,7 @@ jobs:
 
       - run: 
           name: Unit Tests
-          command: make unit_test
+          command: make web_unit_test
 
   functional_test:
     <<: *defaults
@@ -59,7 +59,7 @@ jobs:
 
       - run: 
           name: Functional Tests
-          command: make functional_test
+          command: make web_functional_test
 
 workflows:
   version: 2

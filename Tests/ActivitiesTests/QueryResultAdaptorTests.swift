@@ -12,3 +12,13 @@ public class QueryResultAdaptorTests: XCTestCase {
         XCTAssertEqual(123, activities[0].id)
     }
 }
+
+#if os(Linux)
+extension QueryResultAdaptorTests {
+    static var allTests: [(String, (QueryResultAdaptorTests) -> () throws -> Void)] {
+        return [
+            ("testSQLResultReturnsActivity", testSQLResultReturnsActivity),
+       ]
+    }
+}
+#endif
