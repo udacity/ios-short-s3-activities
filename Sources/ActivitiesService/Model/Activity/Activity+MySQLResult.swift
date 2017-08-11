@@ -29,12 +29,14 @@ public extension MySQLResultProtocol {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
 
-            if let createdAtString = row["created_at"] as? String, let createdAt = dateFormatter.date(from: createdAtString) {
-                activity.createdAt = createdAt
+            if let createdAtString = row["created_at"] as? String,
+               let createdAt = dateFormatter.date(from: createdAtString) {
+                   activity.createdAt = createdAt
             }
 
-            if let updatedAtString = row["updated_at"] as? String, let updatedAt = dateFormatter.date(from: updatedAtString) {
-                activity.updatedAt = updatedAt
+            if let updatedAtString = row["updated_at"] as? String,
+               let updatedAt = dateFormatter.date(from: updatedAtString) {
+                   activity.updatedAt = updatedAt
             }
 
             if let name = row["name"] as? String {

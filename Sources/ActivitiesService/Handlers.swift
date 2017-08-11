@@ -169,11 +169,12 @@ public class Handlers {
     // MARK: Utility
 
     // execute queries safely and return error on failure
-    private func safeDBQuery(response: RouterResponse, block: @escaping ((_: ActivityMySQLDataAccessor) throws -> Void)) throws {
+    private func safeDBQuery(response: RouterResponse,
+                             block: @escaping ((_: ActivityMySQLDataAccessor) throws -> Void)) throws {
         do {
-            try connectionPool.getConnection() { (connection: MySQLConnectionProtocol) in
-                let dataAccessor = ActivityMySQLDataAccessor(connection: connection)
-                try block(dataAccessor)
+            try connectionPool.getConnection { (connection: MySQLConnectionProtocol) in
+                    let dataAccessor = ActivityMySQLDataAccessor(connection: connection)
+                    try block(dataAccessor)
             }
         } catch {
             Log.error(error.localizedDescription)
