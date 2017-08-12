@@ -21,9 +21,10 @@ connectionString.database = env["MYSQL_DATABASE"] ?? "game_night"
 
 // Create connection pool
 var pool = MySQLConnectionPool(connectionString: connectionString, poolSize: 10, defaultCharset: "utf8mb4")
+var dao = ActivityMySQLDataAccessor(pool: pool)
 
 // Create handlers
-let handlers = Handlers(connectionPool: pool)
+let handlers = Handlers(dao: dao)
 
 // Create router
 let router = Router()

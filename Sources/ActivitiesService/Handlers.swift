@@ -10,12 +10,12 @@ public class Handlers {
 
     // MARK: Properties
 
-    let connectionPool: MySQLConnectionPoolProtocol
+    let dao: ActivityMySQLDataAccessorProtocol
 
     // MARK: Initializer
 
-    public init(connectionPool: MySQLConnectionPoolProtocol) {
-        self.connectionPool = connectionPool
+    public init(dao: ActivityMySQLDataAccessorProtocol) {
+        self.dao = dao
     }
 
     // MARK: OPTIONS
@@ -31,25 +31,21 @@ public class Handlers {
     public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         let id = request.parameters["id"]
-        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
 
-            var activities: [Activity]?
+        var activities: [Activity]?
 
-            if let id = id {
-                activities = try accessor.getActivities(withID: id)
-            } else {
-                activities = try accessor.getActivities()
-            }
-
-            if activities == nil {
-                try response.status(.notFound).end()
-                return
-            }
-
-            try response.send(json: activities!.toJSON()).status(.OK).end()
-
+        if let id = id {
+            activities = try dao.getActivities(withID: id)
+        } else {
+            activities = try dao.getActivities()
         }
 
+        if activities == nil {
+            try response.status(.notFound).end()
+            return
+        }
+
+        try response.send(json: activities!.toJSON()).status(.OK).end()
     }
 
     // MARK: POST
@@ -78,20 +74,19 @@ public class Handlers {
         if missingParameters.count != 0 {
             Log.error("parameters missing \(missingParameters)")
             try response.send(json: JSON(["message": "parameters missing \(missingParameters)"]))
-                .status(.badRequest).end()
+                        .status(.badRequest)
+                        .end()
             return
         }
 
-        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
-            let success = try accessor.createActivity(newActivity)
+        let success = try dao.createActivity(newActivity)
 
-            if success {
-                try response.send(json: JSON(["message": "activity created"])).status(.created).end()
+        if success {
+            try response.send(json: JSON(["message": "activity created"])).status(.created).end()
                 return
             }
 
-            try response.status(.notModified).end()
-        }
+        try response.status(.notModified).end()
     }
 
     // MARK: PUT
@@ -132,16 +127,13 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
-            let status = try accessor.updateActivity(updateActivity)
+        let status = try dao.updateActivity(updateActivity)
 
-            if status {
-                try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
-            }
-
-            try response.status(.notModified).end()
+        if status {
+            try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
         }
 
+        try response.status(.notModified).end()
     }
 
     // MARK: DELETE
@@ -155,30 +147,12 @@ public class Handlers {
             return
         }
 
-        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
-            let status = try accessor.deleteActivity(withID: id)
+        let status = try dao.deleteActivity(withID: id)
 
-            if status {
-                try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
-            }
-
-            try response.status(.notModified).end()
+        if status {
+            try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
         }
-    }
 
-    // MARK: Utility
-
-    // execute queries safely and return error on failure
-    private func safeDBQuery(response: RouterResponse,
-                             block: @escaping ((_: ActivityMySQLDataAccessor) throws -> Void)) throws {
-        do {
-            try connectionPool.getConnection { (connection: MySQLConnectionProtocol) in
-                    let dataAccessor = ActivityMySQLDataAccessor(connection: connection)
-                    try block(dataAccessor)
-            }
-        } catch {
-            Log.error(error.localizedDescription)
-            try response.status(.internalServerError).end()
-        }
+        try response.status(.notModified).end()
     }
 }

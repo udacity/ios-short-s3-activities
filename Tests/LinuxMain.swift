@@ -6,6 +6,7 @@ import XCTest
 XCTMain([
     testCase(HandlersTests.allTests),
     testCase(QueryResultAdaptorTests.allTests),
+    testCase(ActivityMySQLDataAccessorTests.allTests),
     testCase(FunctionalTests.allTests)
   ]
 )
