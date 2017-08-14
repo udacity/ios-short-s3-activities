@@ -23,7 +23,7 @@ public class HandlersTests: XCTestCase {
 
     // MARK: from KituraHTTPTest (Nic Jackson)
     var request: Request? // A stubbed request
-    // A stubbed response that is "captured" instead of being output to the 
+    // A stubbed response that is "captured" instead of being output to the
     // requester and stored in an internal buffer; this enables us to test responses
     var responseRecorder: ResponseRecorder?
 
@@ -42,7 +42,7 @@ public class HandlersTests: XCTestCase {
 
         mockDAO = MockActivityDataAccessor()
 
-        handlers = Handlers(dao: mockDAO!)
+        handlers = Handlers(dataAccessor: mockDAO!)
     }
 
     func testQueriesDataBaseForActivities() throws {

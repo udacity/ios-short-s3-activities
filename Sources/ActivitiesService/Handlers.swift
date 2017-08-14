@@ -10,12 +10,12 @@ public class Handlers {
 
     // MARK: Properties
 
-    let dao: ActivityMySQLDataAccessorProtocol
+    let dataAccessor: ActivityMySQLDataAccessorProtocol
 
     // MARK: Initializer
 
-    public init(dao: ActivityMySQLDataAccessorProtocol) {
-        self.dao = dao
+    public init(dataAccessor: ActivityMySQLDataAccessorProtocol) {
+        self.dataAccessor = dataAccessor
     }
 
     // MARK: OPTIONS
@@ -35,9 +35,9 @@ public class Handlers {
         var activities: [Activity]?
 
         if let id = id {
-            activities = try dao.getActivities(withID: id)
+            activities = try dataAccessor.getActivities(withID: id)
         } else {
-            activities = try dao.getActivities()
+            activities = try dataAccessor.getActivities()
         }
 
         if activities == nil {
@@ -55,7 +55,7 @@ public class Handlers {
         guard let body = request.body, case let .json(json) = body else {
             Log.error("body contains invalid JSON")
             try response.send(json: JSON(["message": "body is missing JSON or JSON is invalid"]))
-                .status(.badRequest).end()
+                        .status(.badRequest).end()
             return
         }
 
@@ -74,17 +74,16 @@ public class Handlers {
         if missingParameters.count != 0 {
             Log.error("parameters missing \(missingParameters)")
             try response.send(json: JSON(["message": "parameters missing \(missingParameters)"]))
-                        .status(.badRequest)
-                        .end()
+                        .status(.badRequest).end()
             return
         }
 
-        let success = try dao.createActivity(newActivity)
+        let success = try dataAccessor.createActivity(newActivity)
 
         if success {
             try response.send(json: JSON(["message": "activity created"])).status(.created).end()
-                return
-            }
+            return
+        }
 
         try response.status(.notModified).end()
     }
@@ -96,14 +95,14 @@ public class Handlers {
         guard let body = request.body, case let .json(json) = body else {
             Log.error("body contains invalid JSON")
             try response.send(json: JSON(["message": "body is missing JSON or JSON is invalid"]))
-                .status(.badRequest).end()
+                        .status(.badRequest).end()
             return
         }
 
         guard let id = request.parameters["id"] else {
             Log.error("id (path parameter) missing")
             try response.send(json: JSON(["message": "id (path parameter) missing"]))
-                .status(.badRequest).end()
+                        .status(.badRequest).end()
             return
         }
 
@@ -123,13 +122,13 @@ public class Handlers {
         if missingParameters.count != 0 {
             Log.error("parameters missing \(missingParameters)")
             try response.send(json: JSON(["message": "parameters missing \(missingParameters)"]))
-                .status(.badRequest).end()
+                        .status(.badRequest).end()
             return
         }
 
-        let status = try dao.updateActivity(updateActivity)
+        let success = try dataAccessor.updateActivity(updateActivity)
 
-        if status {
+        if success {
             try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
         }
 
@@ -143,13 +142,13 @@ public class Handlers {
         guard let id = request.parameters["id"] else {
             Log.error("id (path parameter) missing")
             try response.send(json: JSON(["message": "id (path parameter) missing"]))
-                .status(.badRequest).end()
+                        .status(.badRequest).end()
             return
         }
 
-        let status = try dao.deleteActivity(withID: id)
+        let success = try dataAccessor.deleteActivity(withID: id)
 
-        if status {
+        if success {
             try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
         }
 

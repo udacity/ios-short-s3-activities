@@ -6,7 +6,7 @@ import XCTest
 class ActivityMySQLDataAccessorTests: XCTestCase {
     var connection: MockMySQLConnection?
     var connectionPool: MockMySQLConnectionPool?
-    var dao: ActivityMySQLDataAccessor?
+    var dataAccessor: ActivityMySQLDataAccessor?
 
     public override func setUp() {
         connection = MockMySQLConnection()
@@ -17,11 +17,11 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
                                                   defaultCharset: "utf8")
         connectionPool!.getConnectionReturn = connection
 
-        dao = ActivityMySQLDataAccessor(pool: connectionPool!)
+        dataAccessor = ActivityMySQLDataAccessor(pool: connectionPool!)
     }
 
     func testCreateActivityCallsExecute() throws {
-        _ = try dao!.createActivity(Activity())
+        _ = try dataAccessor!.createActivity(Activity())
 
         XCTAssertTrue(connection!.executeBuilderCalled)
     }
@@ -31,7 +31,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 1
         connection!.executeMySQLResultReturn = result
 
-        let created = try dao!.createActivity(Activity())
+        let created = try dataAccessor!.createActivity(Activity())
 
         XCTAssertTrue(created)
     }
@@ -41,7 +41,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        let created = try dao!.createActivity(Activity())
+        let created = try dataAccessor!.createActivity(Activity())
 
         XCTAssertFalse(created)
     }
@@ -53,7 +53,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
 
         var activity = Activity()
         activity.id = 1234
-        _ = try dao!.updateActivity(activity)
+        _ = try dataAccessor!.updateActivity(activity)
 
         let query = connection!.executeBuilderParams?.build()
         let containsWhere = query!.contains("WHERE Id='1234'")
@@ -67,7 +67,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
 
         var activity = Activity()
         activity.id = 1234
-        let created = try dao!.updateActivity(activity)
+        let created = try dataAccessor!.updateActivity(activity)
 
         XCTAssertTrue(created)
     }
@@ -79,7 +79,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
 
         var activity = Activity()
         activity.id = 1234
-        let created = try dao!.updateActivity(activity)
+        let created = try dataAccessor!.updateActivity(activity)
 
         XCTAssertFalse(created)
     }
@@ -89,7 +89,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        _ = try dao!.deleteActivity(withID: "1234")
+        _ = try dataAccessor!.deleteActivity(withID: "1234")
 
         let query = connection!.executeBuilderParams?.build()
         let containsWhere = query!.contains("WHERE Id='1234'")
@@ -101,7 +101,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 1
         connection!.executeMySQLResultReturn = result
 
-        let created = try dao!.deleteActivity(withID: "1234")
+        let created = try dataAccessor!.deleteActivity(withID: "1234")
 
         XCTAssertTrue(created)
     }
@@ -111,7 +111,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        let created = try dao!.deleteActivity(withID: "1234")
+        let created = try dataAccessor!.deleteActivity(withID: "1234")
 
         XCTAssertFalse(created)
     }
@@ -121,7 +121,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        _ = try dao!.getActivities(withID: "1234")
+        _ = try dataAccessor!.getActivities(withID: "1234")
 
         let query = connection!.executeBuilderParams?.build()
         let containsWhere = query!.contains("WHERE Id='1234'")
@@ -134,7 +134,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.results = [["id": 1234]]
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dao!.getActivities(withID: "1234")
+        let activities = try dataAccessor!.getActivities(withID: "1234")
 
         XCTAssertEqual(1234, activities![0].id)
     }
@@ -144,7 +144,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dao!.getActivities(withID: "1234")
+        let activities = try dataAccessor!.getActivities(withID: "1234")
 
         XCTAssertNil(activities)
     }
@@ -154,7 +154,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        _ = try dao!.getActivities()
+        _ = try dataAccessor!.getActivities()
 
         let query = connection!.executeBuilderParams?.build()
         let containsWhere = query!.contains("WHERE")
@@ -167,7 +167,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.results = [["id": 1234]]
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dao!.getActivities()
+        let activities = try dataAccessor!.getActivities()
 
         XCTAssertEqual(1234, activities![0].id)
     }
@@ -177,7 +177,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dao!.getActivities()
+        let activities = try dataAccessor!.getActivities()
 
         XCTAssertNil(activities)
     }
