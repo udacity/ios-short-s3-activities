@@ -12,35 +12,50 @@ jobs:
     steps:
       - checkout
 
+      - setup_remote_docker:
+          verison: 17.03.0-ce
+
       - run:
           name: Install Dependencies
           command: |
                   sudo apt-get update
-                  sudo apt-get install -y libmysqlclient-dev
+                  sudo apt-get install -y curl libmysqlclient-dev
 
-      - run: 
+      - run:
+          name: Install Docker Client
+          command: |
+                  set -x
+                  VER="17.03.0-ce"
+                  curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
+                  tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+                  mv /tmp/docker/* /usr/bin
+
+      - run:
           name: Build Application
           command: make web_build
-      
+
       - persist_to_workspace:
           root: /tmp/
           paths:
             - activities
 
+
   unit_test:
     <<: *defaults
 
     steps:
+      - checkout
+
       - attach_workspace:
           at: /tmp
-      
+
       - run:
           name: Install Dependencies
           command: |
                   sudo apt-get update
                   sudo apt-get install -y libmysqlclient-dev
 
-      - run: 
+      - run:
           name: Unit Tests
           command: make web_unit_test
 
@@ -50,6 +65,7 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp
+      - checkout
 
       - run:
           name: Install Dependencies
@@ -57,9 +73,47 @@ jobs:
                   sudo apt-get update
                   sudo apt-get install -y libmysqlclient-dev
 
-      - run: 
+      - run:
           name: Functional Tests
           command: make web_functional_test
+
+  deploy:
+    <<: *defaults
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - setup_remote_docker:
+          verison: 17.03.0-ce
+
+      - run:
+          name: Install Dependencies
+          command: |
+                  sudo apt-get update
+                  sudo apt-get install -y libmysqlclient-dev curl
+
+      - run:
+          name: Install Docker Client
+          command: |
+                  set -x
+                  VER="17.03.0-ce"
+                  curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
+                  tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+                  mv /tmp/docker/* /usr/bin
+
+      - run:
+          name: Docker Login
+          command: |
+                  docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+      - run:
+          name: Deploy to Dockerhub
+          command: |
+                  make images_build
+                  make web_release_build
 
 workflows:
   version: 2
@@ -72,4 +126,10 @@ workflows:
       - functional_test:
           requires:
             - build
-
+      - deploy:
+          requires:
+            - unit_test
+            - functional_test
+          filters:
+             branches:
+               only: master
