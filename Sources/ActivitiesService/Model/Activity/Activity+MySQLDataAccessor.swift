@@ -1,53 +1,78 @@
 import MySQL
-import LoggerAPI
 
-// MARK: - ActivityMySQLDataAccessor
+// MARK: - ActivityMySQLDataAccessorProtocol
 
-class ActivityMySQLDataAccessor {
+public protocol ActivityMySQLDataAccessorProtocol {
+    func createActivity(_ activity: Activity) throws -> Bool
+    func updateActivity(_ activity: Activity) throws -> Bool
+    func deleteActivity(withID id: String) throws -> Bool
+    func getActivities(withID id: String) throws -> [Activity]?
+    func getActivities() throws -> [Activity]?
+    func getExample(withID id: String) throws -> [Activity]?
+}
+
+// MARK: - ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol
+
+public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
 
     // MARK: Properties
 
-    let connection: MySQLConnectionProtocol
+    let pool: MySQLConnectionPoolProtocol
 
     // MARK: Initializer
 
-    init(connection: MySQLConnectionProtocol) {
-        self.connection = connection
+    public init(pool: MySQLConnectionPoolProtocol) {
+        self.pool = pool
     }
 
     // MARK: Queries
 
-    func createActivity(_ activity: Activity) throws {
+    public func createActivity(_ activity: Activity) throws -> Bool {
         // TODO: Add implementation.
         // Execute insert query.
+        return false
     }
 
-    func updateActivity(_ activity: Activity, withID id: String) throws {
+    public func updateActivity(_ activity: Activity) throws -> Bool {
         // TODO: Add implementation.
         // Execute update query (for specific id).
+        return false
     }
 
-    func deleteActivity(withID id: String) throws {
+    public func deleteActivity(withID id: String) throws -> Bool {
         // TODO: Add implementation.
         // Execute delete query (for specific id).
+        return false
     }
 
-    func getExample(withID id: String) throws -> [Activity]? {
-        let result = try connection.execute(query: "SELECT name FROM activities WHERE id=\(id)")
+    public func getExample(withID id: String) throws -> [Activity]? {
+        let select = MySQLQueryBuilder()
+                        .select(fields: ["name"], table: "activities")
+                        .wheres(statement:"WHERE Id=?", parameters: id)
+
+        let result = try execute(builder: select)
         let activities = result.toActivities()
-        
         return (activities.count == 0) ? nil : activities
     }
 
-    func getActivities(withID id: String) throws -> [Activity]? {
+    public func getActivities(withID id: String) throws -> [Activity]? {
         // TODO: Add implementation.
         // Execute select query (for specific id).
         return nil
     }
 
-    func getActivities() throws -> [Activity]? {
+    public func getActivities() throws -> [Activity]? {
         // TODO: Add implementation.
         // Execute select query (get all activities).
         return nil
+    }
+
+    // MARK: Utility
+
+    func execute(builder: MySQLQueryBuilder) throws -> MySQLResultProtocol {
+        let connection = try pool.getConnection()
+        defer { pool.releaseConnection(connection!) }
+
+        return try connection!.execute(builder: builder)
     }
 }

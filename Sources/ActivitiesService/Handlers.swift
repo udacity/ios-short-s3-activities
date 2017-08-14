@@ -10,12 +10,12 @@ public class Handlers {
 
     // MARK: Properties
 
-    var connectionPool: MySQLConnectionPool
+    let dataAccessor: ActivityMySQLDataAccessorProtocol
 
     // MARK: Initializer
 
-    public init(connectionPool: MySQLConnectionPool) {
-        self.connectionPool = connectionPool
+    public init(dataAccessor: ActivityMySQLDataAccessorProtocol) {
+        self.dataAccessor = dataAccessor
     }
 
     // MARK: OPTIONS
@@ -32,23 +32,25 @@ public class Handlers {
 
         guard let id = request.parameters["id"] else {
             Log.error("id (path parameter) missing")
-            try response.status(.badRequest).end()
+            try response.send(json: JSON(["message": "id (path parameter) missing"]))
+                        .status(.badRequest).end()
             return
         }
 
-        try safeDBQuery(response: response) { (accessor: ActivityMySQLDataAccessor) in
-            if let activities = try accessor.getExample(withID: id) {
-                try response.send(json: activities.toJSON()).status(.OK).end()
-            }  else {
-                try response.status(.notFound).end()
-            }
+        let activities = try dataAccessor.getExample(withID: id)
+
+        if activities == nil {
+            try response.status(.notFound).end()
+            return
         }
+
+        try response.send(json: activities!.toJSON()).status(.OK).end()
     }
 
     public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
         // TODO: Add implementation.
         // Check for id (if exists).
-        // Perform selection query, get activities.
+        // Use data accessor to get activities.
         // Return activities.
     }
 
@@ -58,7 +60,7 @@ public class Handlers {
         // TODO: Add implementation.
         // Check for request body.
         // Validate request body has all activity parameters.
-        // Perform insertion query.
+        // Use data accessor to insert activity.
         // Return success/failure.
     }
 
@@ -69,7 +71,7 @@ public class Handlers {
         // Check for id.
         // Check for request body.
         // Validate request body has all activity parameters.
-        // Perform update query.
+        // Use data accessor to update activity.
         // Return success/failure.
     }
 
@@ -78,22 +80,7 @@ public class Handlers {
     public func deleteActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
         // TODO: Add implementation.
         // Check for id.
-        // Perform delete query.
+        // Use data accessor to delete activity.
         // Return success/failure.
-    }
-
-    // MARK: Utility
-
-    // execute queries safely and return error on failure
-    private func safeDBQuery(response: RouterResponse, block: @escaping ((_: ActivityMySQLDataAccessor) throws -> Void)) throws {
-        do {
-            try connectionPool.getConnection() { (connection: MySQLConnectionProtocol) in
-                let dataAccessor = ActivityMySQLDataAccessor(connection: connection)
-                try block(dataAccessor)
-            }
-        } catch {
-            Log.error(error.localizedDescription)
-            try response.status(.internalServerError).end()
-        }
     }
 }
