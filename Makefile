@@ -13,8 +13,8 @@ hello_kitura:
 	@echo "hello kitura"
 
 web_dev: build_web_image
-	docker run --name ${SERVER_NAME} \
-	-it --rm -v ${PWD}:/src \
+	docker run --name $(SERVER_NAME) \
+	-it --rm -v $(PWD):/src \
 	-w /src \
 	-p 80:8080 kitura-server /bin/bash
 
