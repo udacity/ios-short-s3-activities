@@ -19,15 +19,13 @@ public class HandlersTests: XCTestCase {
     // MARK: from ActivitiesService
     var handlers: Handlers? // Request handler
 
-    // MARK: from SwiftMySQL (Nic Jackson)
-    var connection: MockMySQLConnection?
-    var connectionPool: MockMySQLConnectionPool?
+    var mockDAO: MockActivityDataAccessor?
 
     // MARK: from KituraHTTPTest (Nic Jackson)
     var request: Request? // A stubbed request
-    // A stubbed response that is "captured" instead of being output to the 
+    // A stubbed response that is "captured" instead of being output to the
     // requester and stored in an internal buffer; this enables us to test responses
-    var responseRecorder: ResponseRecorder? 
+    var responseRecorder: ResponseRecorder?
 
     public override func setUp() {
         request = Request()
@@ -42,54 +40,37 @@ public class HandlersTests: XCTestCase {
                 routerStack: routerStack,
                 request: routerRequest!)
 
-        connection = MockMySQLConnection()
+        mockDAO = MockActivityDataAccessor()
 
-        let connectionString = MySQLConnectionString(host: "127.0.0.1")
-        connectionPool = MockMySQLConnectionPool(connectionString: connectionString,
-                                                  poolSize: 1,
-                                                  defaultCharset: "utf8")
-        connectionPool!.getConnectionReturn = connection
-
-        handlers = Handlers(connectionPool: connectionPool!)
+        handlers = Handlers(dataAccessor: mockDAO!)
     }
 
     func testQueriesDataBaseForActivities() throws {
         routerRequest = RouterRequest(request: request!)
 
-        try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
+        try handlers!.getActivities(request: routerRequest!, response: routerResponse!) {}
 
-        XCTAssertTrue(connection!.executeBuilderCalled)
+        XCTAssertTrue(mockDAO!.getActivityCalled)
     }
 
     func testReturnsActivitiesOnSuccessfulQuery() throws {
         // setup
         routerRequest = RouterRequest(request: request!)
-        
+
         // setup expectation on the mock
-        let mockResult = MockMySQLResult()
-        mockResult.results = [["id": 123 as Any]]
-        connection!.executeMySQLResultReturn = mockResult
+        var activity = Activity()
+        activity.id = 123
+
+        let activities = [ activity ]
+        mockDAO!.getActivityReturn = activities
 
         // execute
-        try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
+        try handlers!.getActivities(request: routerRequest!, response: routerResponse!) {}
 
         // assert
         let body = responseRecorder!.jsonBody()
         XCTAssertEqual(123, body[0]["id"])
-        XCTAssertEqual(HTTPStatusCode.OK,responseRecorder!.statusCode)
-    }
-
-    func testReturnsInternalServerErrorOnFailedQuery() throws {
-        routerRequest = RouterRequest(request: request!)
-        
-        // setup expectation on the mock
-        connection!.executeMySQLErrorReturn = .UnableToExecuteQuery(message: "oops")
-
-        try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
-
-        let body = responseRecorder!.body()
-        XCTAssertEqual("", body)
-        XCTAssertEqual(HTTPStatusCode.internalServerError,responseRecorder!.statusCode)
+        XCTAssertEqual(HTTPStatusCode.OK, responseRecorder!.statusCode)
     }
 
     func testReturnsNotFoundWhenNoActivitiesFromQuery() throws {
@@ -97,9 +78,9 @@ public class HandlersTests: XCTestCase {
 
         // because we are not setting the expectation on the mock the callback
         // will never get called and query result will be nil
-        try handlers!.getActivities(request: routerRequest!, response: routerResponse!){}
+        try handlers!.getActivities(request: routerRequest!, response: routerResponse!) {}
 
-        XCTAssertEqual(HTTPStatusCode.notFound,responseRecorder!.statusCode)
+        XCTAssertEqual(HTTPStatusCode.notFound, responseRecorder!.statusCode)
     }
 }
 
@@ -109,7 +90,6 @@ extension HandlersTests {
         return [
             ("testQueriesDataBaseForActivities", testQueriesDataBaseForActivities),
             ("testReturnsActivitiesOnSuccessfulQuery", testReturnsActivitiesOnSuccessfulQuery),
-            ("testReturnsInternalServerErrorOnFailedQuery", testReturnsInternalServerErrorOnFailedQuery),
             ("testReturnsNonFoundWhenNoActivitiesFromQuery", testReturnsNotFoundWhenNoActivitiesFromQuery)
        ]
     }
