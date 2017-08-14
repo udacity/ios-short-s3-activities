@@ -1,5 +1,7 @@
 import MySQL
 
+// MARK: - ActivityMySQLDataAccessorProtocol
+
 public protocol ActivityMySQLDataAccessorProtocol {
     func createActivity(_ activity: Activity) throws -> Bool
     func updateActivity(_ activity: Activity) throws -> Bool
@@ -8,7 +10,7 @@ public protocol ActivityMySQLDataAccessorProtocol {
     func getActivities() throws -> [Activity]?
 }
 
-// MARK: - ActivityMySQLDataAccessor
+// MARK: - ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol
 
 public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
 
@@ -67,6 +69,8 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
         let activities = result.toActivities()
         return (activities.count == 0) ? nil : activities
     }
+
+    // MARK: Utility
 
     func execute(builder: MySQLQueryBuilder) throws -> MySQLResultProtocol {
         let connection = try pool.getConnection()
