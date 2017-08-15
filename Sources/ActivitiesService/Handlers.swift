@@ -69,7 +69,8 @@ public class Handlers {
             maxParticipants: json["max_participants"].int,
             createdAt: nil, updatedAt: nil)
 
-        let missingParameters = newActivity.validate()
+        let missingParameters = newActivity.validateParameters(
+            ["name", "emoji", "description", "genre", "min_participants", "max_participants"])
 
         if missingParameters.count != 0 {
             Log.error("parameters missing \(missingParameters)")
@@ -117,7 +118,8 @@ public class Handlers {
             createdAt: nil,
             updatedAt: nil)
 
-        let missingParameters = updateActivity.validate()
+        let missingParameters = updateActivity.validateParameters(
+            ["name", "emoji", "description", "genre", "min_participants", "max_participants"])
 
         if missingParameters.count != 0 {
             Log.error("parameters missing \(missingParameters)")
