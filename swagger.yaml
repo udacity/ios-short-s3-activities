@@ -76,8 +76,8 @@ paths:
         404:
           $ref: "#/responses/NotFound"
     put:
-      description: Updates and activity with ID.
-      summary: Updates and activity with ID.
+      description: Updates an activity with ID.
+      summary: Updates an activity with ID.
       parameters:
         - name: id
           in: path
