@@ -62,12 +62,17 @@ web_functional_test_docker:
 	-w /src $(WEB_IMAGE) /bin/bash -c 'TEST=true swift test -s FunctionalTests.FunctionalTests --build-path=/.build'
 
 web_release_build:
-	docker run -it --rm -v $(shell pwd):/src -w /src kitura-server /bin/bash -c \
+	# create dummy source container which will hold the source code
+	docker create -v /src --name source alpine:3.4 /bin/true
+	# copy source volume onto src container
+	docker cp $(shell pwd) source:/src
+	# compile source using dummy container
+	docker run -it --rm --volumes-from source -w /src kitura-server /bin/bash -c \
 		"swift build -c release \
 		-Xlinker -L/usr/lib/swift/linux \
 		-Xlinker -L/usr/local/lib \
 		-Xswiftc -static-stdlib"
-	docker run -it --rm -v $(shell pwd):/src -w /src kitura-server /bin/bash -c \
+	docker run -it --rm --volumes-from source -w /src kitura-server /bin/bash -c \
 		"cp /usr/lib/swift/linux/*.so /src/linux_shared"
 	docker build -t $(WEB_CONTAINER_NAME) -f Dockerfile-prod .
 	docker tag $(WEB_CONTAINER_NAME) $(WEB_DOCKER_REPO):$(VERSION)
