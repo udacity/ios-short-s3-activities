@@ -18,10 +18,6 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
 
     let pool: MySQLConnectionPoolProtocol
 
-    let selectActivities = MySQLQueryBuilder()
-            .select(fields: ["id", "name", "emoji", "description", "genre",
-            "min_participants", "max_participants", "created_at", "updated_at"], table: "activities")
-
     // MARK: Initializer
 
     public init(pool: MySQLConnectionPoolProtocol) {
@@ -41,7 +37,7 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
     public func updateActivity(_ activity: Activity) throws -> Bool {
         let updateQuery = MySQLQueryBuilder()
                 .update(data: activity.toMySQLRow(), table: "activities")
-                .wheres(statement: "WHERE Id=?", parameters: "\(activity.id!)")
+                .wheres(statement: "Id=?", parameters: "\(activity.id!)")
 
         let result = try execute(builder: updateQuery)
         return result.affectedRows > 0
@@ -50,14 +46,18 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
     public func deleteActivity(withID id: String) throws -> Bool {
         let deleteQuery = MySQLQueryBuilder()
                 .delete(fromTable: "activities")
-                .wheres(statement: "WHERE Id=?", parameters: "\(id)")
+                .wheres(statement: "Id=?", parameters: "\(id)")
 
         let result = try execute(builder: deleteQuery)
         return result.affectedRows > 0
     }
 
     public func getActivities(withID id: String) throws -> [Activity]? {
-        let select = selectActivities.wheres(statement:"WHERE Id=?", parameters: id)
+        let selectBuilder = MySQLQueryBuilder()
+            .select(fields: ["id", "name", "emoji", "description", "genre",
+            "min_participants", "max_participants", "created_at", "updated_at"], table: "activities")
+
+        let select = selectBuilder.wheres(statement:"Id=?", parameters: id)
 
         let result = try execute(builder: select)
         let activities = result.toActivities()
@@ -65,7 +65,11 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
     }
 
     public func getActivities() throws -> [Activity]? {
-        let result = try execute(builder: selectActivities)
+        let selectBuilder = MySQLQueryBuilder()
+            .select(fields: ["id", "name", "emoji", "description", "genre",
+            "min_participants", "max_participants", "created_at", "updated_at"], table: "activities")
+
+        let result = try execute(builder: selectBuilder)
         let activities = result.toActivities()
         return (activities.count == 0) ? nil : activities
     }
