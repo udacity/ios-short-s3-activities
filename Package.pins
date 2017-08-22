@@ -8,6 +8,12 @@
       "version": "0.4.0"
     },
     {
+      "package": "CEpoll",
+      "reason": null,
+      "repositoryURL": "https://github.com/IBM-Swift/CEpoll.git",
+      "version": "0.1.0"
+    },
+    {
       "package": "HeliumLogger",
       "reason": null,
       "repositoryURL": "https://github.com/IBM-Swift/HeliumLogger.git",
@@ -20,22 +26,16 @@
       "version": "1.7.7"
     },
     {
-      "package": "Kitura-TemplateEngine",
-      "reason": null,
-      "repositoryURL": "https://github.com/IBM-Swift/Kitura-TemplateEngine.git",
-      "version": "1.7.1"
-    },
-    {
       "package": "Kitura-net",
       "reason": null,
       "repositoryURL": "https://github.com/IBM-Swift/Kitura-net.git",
       "version": "1.7.15"
     },
     {
-      "package": "KituraHTTPTest",
+      "package": "Kitura-TemplateEngine",
       "reason": null,
-      "repositoryURL": "https://github.com/nicholasjackson/kitura-http-test.git",
-      "version": "0.2.0"
+      "repositoryURL": "https://github.com/IBM-Swift/Kitura-TemplateEngine.git",
+      "version": "1.7.1"
     },
     {
       "package": "LoggerAPI",
@@ -50,10 +50,16 @@
       "version": "1.4.0"
     },
     {
-      "package": "SSLService",
+      "package": "OpenSSL",
       "reason": null,
-      "repositoryURL": "https://github.com/IBM-Swift/BlueSSLService.git",
-      "version": "0.12.48"
+      "repositoryURL": "https://github.com/IBM-Swift/OpenSSL.git",
+      "version": "0.3.6"
+    },
+    {
+      "package": "Signals",
+      "reason": null,
+      "repositoryURL": "https://github.com/IBM-Swift/BlueSignals.git",
+      "version": "0.9.48"
     },
     {
       "package": "Socket",
@@ -62,16 +68,22 @@
       "version": "0.12.61"
     },
     {
-      "package": "SwiftyJSON",
+      "package": "SSLService",
       "reason": null,
-      "repositoryURL": "https://github.com/IBM-Swift/SwiftyJSON.git",
-      "version": "16.0.1"
+      "repositoryURL": "https://github.com/IBM-Swift/BlueSSLService.git",
+      "version": "0.12.48"
     },
     {
       "package": "swift-libmysql",
       "reason": null,
       "repositoryURL": "https://github.com/nicholasjackson/swift-libmysql",
       "version": "0.1.0"
+    },
+    {
+      "package": "SwiftyJSON",
+      "reason": null,
+      "repositoryURL": "https://github.com/IBM-Swift/SwiftyJSON.git",
+      "version": "16.0.1"
     }
   ],
   "version": 1
