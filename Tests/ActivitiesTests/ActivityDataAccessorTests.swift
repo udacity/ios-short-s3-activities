@@ -121,7 +121,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        _ = try dataAccessor!.getActivities(withID: "1234")
+        _ = try dataAccessor!.getActivities(withID: "1234", maxSize: 1, offset: 0)
 
         let query = connection!.executeBuilderParams?.build()
         let containsWhere = query!.contains("WHERE Id='1234'")
@@ -134,7 +134,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.results = [["id": 1234]]
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dataAccessor!.getActivities(withID: "1234")
+        let activities = try dataAccessor!.getActivities(withID: "1234", maxSize: 1, offset: 0)
 
         XCTAssertEqual(1234, activities![0].id)
     }
@@ -144,7 +144,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dataAccessor!.getActivities(withID: "1234")
+        let activities = try dataAccessor!.getActivities(withID: "1234", maxSize: 1, offset: 0)
 
         XCTAssertNil(activities)
     }
@@ -154,7 +154,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        _ = try dataAccessor!.getActivities()
+        _ = try dataAccessor!.getActivities(maxSize: 1, offset: 0)
 
         let query = connection!.executeBuilderParams?.build()
         let containsWhere = query!.contains("WHERE")
@@ -167,7 +167,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.results = [["id": 1234]]
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dataAccessor!.getActivities()
+        let activities = try dataAccessor!.getActivities(maxSize: 1, offset: 0)
 
         XCTAssertEqual(1234, activities![0].id)
     }
@@ -177,9 +177,33 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dataAccessor!.getActivities()
+        let activities = try dataAccessor!.getActivities(maxSize: 1, offset: 0)
 
         XCTAssertNil(activities)
+    }
+
+    func testGetActivitiesWithSize1ReturnsCorrectData() throws {
+        let result = MockMySQLResult()
+        result.affectedRows = -1
+        result.results = [["id": 1234], ["id": 2345]]
+        connection!.executeMySQLResultReturn = result
+
+        let activities = try dataAccessor!.getActivities(maxSize: 1, offset: 0)
+
+        XCTAssertEqual(1, activities!.count)
+        XCTAssertEqual(1234, activities![0].id)
+    }
+
+    func testGetActivitiesWithSize1AndOffsetReturnsCorrectData() throws {
+        let result = MockMySQLResult()
+        result.affectedRows = -1
+        result.results = [["id": 1234], ["id": 2345]]
+        connection!.executeMySQLResultReturn = result
+
+        let activities = try dataAccessor!.getActivities(maxSize: 1, offset: 1)
+
+        XCTAssertEqual(1, activities!.count)
+        XCTAssertEqual(2345, activities![0].id)
     }
 
 }

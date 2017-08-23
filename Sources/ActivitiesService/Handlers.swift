@@ -35,9 +35,9 @@ public class Handlers {
         var activities: [Activity]?
 
         if let id = id {
-            activities = try dataAccessor.getActivities(withID: id)
+            activities = try dataAccessor.getActivities(withID: id, maxSize: 10, offset: 0)
         } else {
-            activities = try dataAccessor.getActivities()
+            activities = try dataAccessor.getActivities(maxSize: 10, offset: 0)
         }
 
         if activities == nil {

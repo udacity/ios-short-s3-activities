@@ -6,7 +6,7 @@ import Foundation
 
 public extension MySQLResultProtocol {
 
-    public func toActivities() -> [Activity] {
+    public func toActivities(maxSize: Int = 0) -> [Activity] {
 
         var activities = [Activity]()
 
@@ -56,6 +56,11 @@ public extension MySQLResultProtocol {
             }
 
             activities.append(activity)
+
+            // return collection limited by max size if specified
+            if maxSize > 0 && activities.count == maxSize {
+                break
+            }
         }
 
         return activities

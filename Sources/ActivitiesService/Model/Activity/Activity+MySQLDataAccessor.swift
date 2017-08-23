@@ -6,8 +6,8 @@ public protocol ActivityMySQLDataAccessorProtocol {
     func createActivity(_ activity: Activity) throws -> Bool
     func updateActivity(_ activity: Activity) throws -> Bool
     func deleteActivity(withID id: String) throws -> Bool
-    func getActivities(withID id: String) throws -> [Activity]?
-    func getActivities() throws -> [Activity]?
+    func getActivities(withID id: String, maxSize: Int, offset: Int64) throws -> [Activity]?
+    func getActivities(maxSize: Int, offset: Int64) throws -> [Activity]?
 }
 
 // MARK: - ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol
@@ -52,7 +52,7 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
         return result.affectedRows > 0
     }
 
-    public func getActivities(withID id: String) throws -> [Activity]? {
+    public func getActivities(withID id: String, maxSize: Int = 0, offset: Int64 = 0) throws -> [Activity]? {
         let selectBuilder = MySQLQueryBuilder()
             .select(fields: ["id", "name", "emoji", "description", "genre",
             "min_participants", "max_participants", "created_at", "updated_at"], table: "activities")
@@ -60,17 +60,26 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
         let select = selectBuilder.wheres(statement:"Id=?", parameters: id)
 
         let result = try execute(builder: select)
-        let activities = result.toActivities()
+
+        if offset > 0 {
+            result.seek(offset: offset)
+        }
+
+        let activities = result.toActivities(maxSize: maxSize)
         return (activities.count == 0) ? nil : activities
     }
 
-    public func getActivities() throws -> [Activity]? {
+    public func getActivities(maxSize: Int = 10, offset: Int64 = 0) throws -> [Activity]? {
         let selectBuilder = MySQLQueryBuilder()
             .select(fields: ["id", "name", "emoji", "description", "genre",
             "min_participants", "max_participants", "created_at", "updated_at"], table: "activities")
 
         let result = try execute(builder: selectBuilder)
-        let activities = result.toActivities()
+        if offset > 0 {
+            result.seek(offset: offset)
+        }
+
+        let activities = result.toActivities(maxSize: maxSize)
         return (activities.count == 0) ? nil : activities
     }
 
