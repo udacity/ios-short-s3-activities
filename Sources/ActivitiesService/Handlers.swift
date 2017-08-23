@@ -32,9 +32,9 @@ public class Handlers {
 
         let id = request.parameters["id"]
 
-        guard let pageSize = UInt(request.queryParameters["pageSize"] ?? "0"), let offset = UInt64(request.queryParameters["offset"] ?? "0") else {
-            Log.error("could not initialize pageSize and offset")
-            try response.send(json: JSON(["message": "could not initialize pageSize and offset"]))
+        guard let pageSize = UInt(request.queryParameters["pageSize"] ?? "0"), let pageNumber = UInt64(request.queryParameters["pageNumber"] ?? "0") else {
+            Log.error("could not initialize pageSize and pageNumber")
+            try response.send(json: JSON(["message": "could not initialize pageSize and pageNumber"]))
                         .status(.internalServerError).end()
             return
         }
@@ -44,7 +44,7 @@ public class Handlers {
         if let id = id {
             activities = try dataAccessor.getActivities(withID: id)
         } else {
-            activities = try dataAccessor.getActivities(pageSize: pageSize, offset: offset)
+            activities = try dataAccessor.getActivities(pageSize: pageSize, pageNumber: pageNumber)
         }
 
         if activities == nil {

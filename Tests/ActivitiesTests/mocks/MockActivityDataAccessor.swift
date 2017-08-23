@@ -57,7 +57,7 @@ class MockActivityDataAccessor: ActivityMySQLDataAccessorProtocol {
         return getActivityReturn
     }
 
-    func getActivities(pageSize: UInt = 10, offset: UInt64 = 0) throws -> [Activity]? {
+    func getActivities(pageSize: UInt = 10, pageNumber: UInt64 = 0) throws -> [Activity]? {
         getActivityCalled = true
 
         if let err = getActivityError {
