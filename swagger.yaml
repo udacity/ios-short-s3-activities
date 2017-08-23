@@ -23,6 +23,15 @@ paths:
     get:
       description: Returns all activites.
       summary: Returns all activites.
+      parameters:
+       - name: limit
+         in: query
+         description: Number of events returned. Limit is 50.
+         type: integer
+       - name: page
+         in: query
+         description: Page number.
+         type: integer      
       responses:
         200:
           description: Successful response.
