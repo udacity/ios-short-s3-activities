@@ -82,6 +82,32 @@ public class HandlersTests: XCTestCase {
 
         XCTAssertEqual(HTTPStatusCode.notFound, responseRecorder!.statusCode)
     }
+
+    /*
+    func testReturnsLimitedActivitiesWhenPageSize() throws {
+        routerRequest = RouterRequest(request: request!)
+
+        // setup expectation on the mock
+        var activity = Activity()
+        activity.id = 123
+
+        var activity2 = Activity()
+        activity.id = 234
+
+        let activities = [ activity, activity2 ]
+        mockDAO!.getActivityReturn = activities
+
+        request.parameters["pageSize"] = 1
+
+        // execute
+        try handlers!.getActivities(request: routerRequest!, response: routerResponse!) {}
+
+        // assert
+        let body = responseRecorder!.jsonBody()
+        XCTAssertEqual(1, body.count)
+        XCTAssertEqual(HTTPStatusCode.OK, responseRecorder!.statusCode)
+    }
+    */
 }
 
 #if os(Linux)

@@ -23,6 +23,19 @@ paths:
     get:
       description: Returns all activites.
       summary: Returns all activites.
+      parameters:
+        - name: pageSize
+          in: path
+          description: max number of activities to return
+          required: false
+          type: integer
+          format: int64
+        - name: offset
+          in: path
+          description: starting index of activities to return
+          required: false
+          type: integer
+          format: int64
       responses:
         200:
           description: Successful response.
@@ -64,6 +77,18 @@ paths:
           in: path
           description: ID of activity to fetch
           required: true
+          type: integer
+          format: int64
+        - name: pageSize
+          in: path
+          description: max number of activities to return
+          required: false
+          type: integer
+          format: int64
+        - name: offset
+          in: path
+          description: starting index of activities to return
+          required: false
           type: integer
           format: int64
       responses:

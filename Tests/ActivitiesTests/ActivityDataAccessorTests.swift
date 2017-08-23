@@ -226,7 +226,10 @@ extension ActivityMySQLDataAccessorTests {
             ("testGetActivityWithIDReturnsNilOnFail", testGetActivityWithIDReturnsNilOnFail),
             ("testGetActivitiesCallsExecute", testGetActivitiesCallsExecute),
             ("testGetActivitiesReturnsActivitiesOnSuccess", testGetActivitiesReturnsActivitiesOnSuccess),
-            ("testGetActivitiesReturnsNilOnFail", testGetActivitiesReturnsNilOnFail)
+            ("testGetActivitiesReturnsNilOnFail", testGetActivitiesReturnsNilOnFail),
+            ("testGetActivitiesWithSize1ReturnsCorrectData", testGetActivitiesWithSize1ReturnsCorrectData),
+            ("testGetActivitiesWithSize1AndOffsetReturnsCorrectData",
+                testGetActivitiesWithSize1AndOffsetReturnsCorrectData)
         ]
     }
 }

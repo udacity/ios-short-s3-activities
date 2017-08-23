@@ -30,14 +30,20 @@ public class Handlers {
 
     public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
+        print("size: \(request.queryParameters["pageSize"])")
+
         let id = request.parameters["id"]
+        let pageSize = Int(request.queryParameters["pageSize"] ?? "0")
+        let offset = Int64(request.queryParameters["offset"] ?? "0")
+
+        print("size \(pageSize)")
 
         var activities: [Activity]?
 
         if let id = id {
-            activities = try dataAccessor.getActivities(withID: id, maxSize: 10, offset: 0)
+            activities = try dataAccessor.getActivities(withID: id, maxSize: pageSize!, offset: offset!)
         } else {
-            activities = try dataAccessor.getActivities(maxSize: 10, offset: 0)
+            activities = try dataAccessor.getActivities(maxSize: pageSize!, offset: offset!)
         }
 
         if activities == nil {
