@@ -6,8 +6,8 @@ public protocol ActivityMySQLDataAccessorProtocol {
     func createActivity(_ activity: Activity) throws -> Bool
     func updateActivity(_ activity: Activity) throws -> Bool
     func deleteActivity(withID id: String) throws -> Bool
-    func getActivities(withID id: String, maxSize: Int, offset: Int64) throws -> [Activity]?
-    func getActivities(maxSize: Int, offset: Int64) throws -> [Activity]?
+    func getActivities(withID id: String) throws -> [Activity]?
+    func getActivities(pageSize: UInt, offset: UInt64) throws -> [Activity]?
 }
 
 // MARK: - ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol
@@ -37,7 +37,7 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
     public func updateActivity(_ activity: Activity) throws -> Bool {
         let updateQuery = MySQLQueryBuilder()
                 .update(data: activity.toMySQLRow(), table: "activities")
-                .wheres(statement: "Id=?", parameters: "\(activity.id!)")
+                .wheres(statement: "WHERE Id=?", parameters: "\(activity.id!)")
 
         let result = try execute(builder: updateQuery)
         return result.affectedRows > 0
@@ -46,40 +46,34 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
     public func deleteActivity(withID id: String) throws -> Bool {
         let deleteQuery = MySQLQueryBuilder()
                 .delete(fromTable: "activities")
-                .wheres(statement: "Id=?", parameters: "\(id)")
+                .wheres(statement: "WHERE Id=?", parameters: "\(id)")
 
         let result = try execute(builder: deleteQuery)
         return result.affectedRows > 0
     }
 
-    public func getActivities(withID id: String, maxSize: Int = 0, offset: Int64 = 0) throws -> [Activity]? {
-        let selectBuilder = MySQLQueryBuilder()
+    public func getActivities(withID id: String) throws -> [Activity]? {
+        let select = MySQLQueryBuilder()
             .select(fields: ["id", "name", "emoji", "description", "genre",
             "min_participants", "max_participants", "created_at", "updated_at"], table: "activities")
-
-        let select = selectBuilder.wheres(statement:"Id=?", parameters: id)
+            .wheres(statement:"WHERE Id=?", parameters: id)
 
         let result = try execute(builder: select)
-
-        if offset > 0 {
-            result.seek(offset: offset)
-        }
-
-        let activities = result.toActivities(maxSize: maxSize)
+        let activities = result.toActivities()
         return (activities.count == 0) ? nil : activities
     }
 
-    public func getActivities(maxSize: Int = 10, offset: Int64 = 0) throws -> [Activity]? {
+    public func getActivities(pageSize: UInt = 10, offset: UInt64 = 0) throws -> [Activity]? {
         let selectBuilder = MySQLQueryBuilder()
             .select(fields: ["id", "name", "emoji", "description", "genre",
             "min_participants", "max_participants", "created_at", "updated_at"], table: "activities")
 
         let result = try execute(builder: selectBuilder)
         if offset > 0 {
-            result.seek(offset: offset)
+            result.seek(offset: Int64(offset))
         }
 
-        let activities = result.toActivities(maxSize: maxSize)
+        let activities = result.toActivities(pageSize: pageSize)
         return (activities.count == 0) ? nil : activities
     }
 

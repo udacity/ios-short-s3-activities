@@ -67,7 +67,6 @@ web_release_build:
 		-Xlinker -L/usr/local/lib \
 		-Xswiftc -static-stdlib
 	cp /usr/lib/swift/linux/*.so ./linux_shared
-
 	docker build -t $(WEB_CONTAINER_NAME) -f Dockerfile-prod .
 	docker tag $(WEB_CONTAINER_NAME) $(WEB_DOCKER_REPO):$(VERSION)
 	docker tag $(WEB_CONTAINER_NAME) $(WEB_DOCKER_REPO):latest

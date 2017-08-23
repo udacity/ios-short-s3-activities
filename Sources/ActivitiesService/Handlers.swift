@@ -30,20 +30,21 @@ public class Handlers {
 
     public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
-        print("size: \(request.queryParameters["pageSize"])")
-
         let id = request.parameters["id"]
-        let pageSize = Int(request.queryParameters["pageSize"] ?? "0")
-        let offset = Int64(request.queryParameters["offset"] ?? "0")
 
-        print("size \(pageSize)")
+        guard let pageSize = UInt(request.queryParameters["pageSize"] ?? "0"), let offset = UInt64(request.queryParameters["offset"] ?? "0") else {
+            Log.error("could not initialize pageSize and offset")
+            try response.send(json: JSON(["message": "could not initialize pageSize and offset"]))
+                        .status(.internalServerError).end()
+            return
+        }
 
         var activities: [Activity]?
 
         if let id = id {
-            activities = try dataAccessor.getActivities(withID: id, maxSize: pageSize!, offset: offset!)
+            activities = try dataAccessor.getActivities(withID: id)
         } else {
-            activities = try dataAccessor.getActivities(maxSize: pageSize!, offset: offset!)
+            activities = try dataAccessor.getActivities(pageSize: pageSize, offset: offset)
         }
 
         if activities == nil {
@@ -75,7 +76,8 @@ public class Handlers {
             maxParticipants: json["max_participants"].int,
             createdAt: nil, updatedAt: nil)
 
-        let missingParameters = newActivity.validate()
+        let missingParameters = newActivity.validateParameters(
+            ["name", "emoji", "description", "genre", "min_participants", "max_participants"])
 
         if missingParameters.count != 0 {
             Log.error("parameters missing \(missingParameters)")
@@ -123,7 +125,8 @@ public class Handlers {
             createdAt: nil,
             updatedAt: nil)
 
-        let missingParameters = updateActivity.validate()
+        let missingParameters = updateActivity.validateParameters(
+            ["name", "emoji", "description", "genre", "min_participants", "max_participants"])
 
         if missingParameters.count != 0 {
             Log.error("parameters missing \(missingParameters)")
