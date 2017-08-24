@@ -154,7 +154,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        _ = try dataAccessor!.getActivities(pageSize: 1, pageNumber: 0)
+        _ = try dataAccessor!.getActivities()
 
         let query = connection!.executeBuilderParams?.build()
         let containsWhere = query!.contains("WHERE")
@@ -167,7 +167,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.results = [["id": 1234]]
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dataAccessor!.getActivities(pageSize: 1, pageNumber: 0)
+        let activities = try dataAccessor!.getActivities()
 
         XCTAssertEqual(1234, activities![0].id)
     }
@@ -177,7 +177,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dataAccessor!.getActivities(pageSize: 1, pageNumber: 0)
+        let activities = try dataAccessor!.getActivities()
 
         XCTAssertNil(activities)
     }
@@ -188,7 +188,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.results = [["id": 1234], ["id": 2345]]
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dataAccessor!.getActivities(pageSize: 1, pageNumber: 0)
+        let activities = try dataAccessor!.getActivities(pageSize: 1, pageNumber: 1)
 
         XCTAssertEqual(1, activities!.count)
         XCTAssertEqual(1234, activities![0].id)
@@ -200,7 +200,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.results = [["id": 1234], ["id": 2345]]
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dataAccessor!.getActivities(pageSize: 1, pageNumber: 1)
+        let activities = try dataAccessor!.getActivities(pageSize: 1, pageNumber: 2)
 
         XCTAssertEqual(1, activities!.count)
         XCTAssertEqual(2345, activities![0].id)

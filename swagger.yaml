@@ -29,13 +29,13 @@ paths:
           description: Number of events returned. Limit is 50.
           required: false
           type: integer
-          format: int64
+          format: int
         - name: pageNumber
           in: query
           description: Starting index of page to return.
           required: false
           type: integer
-          format: int64
+          format: int
     responses:
         200:
           description: Successful response.
@@ -78,7 +78,7 @@ paths:
           description: ID of activity to fetch
           required: true
           type: integer
-          format: int64
+          format: int
       responses:
         200:
           description: Successful response.
@@ -97,7 +97,7 @@ paths:
           description: ID of activity to fetch
           required: true
           type: integer
-          format: int64
+          format: int
         - name: activity
           in: body
           description: Data to update an existing activity.
@@ -126,7 +126,7 @@ paths:
           description: ID of activity to delete
           required: true
           type: integer
-          format: int64
+          format: int
       responses:
         204:
           description: Activity deleted.

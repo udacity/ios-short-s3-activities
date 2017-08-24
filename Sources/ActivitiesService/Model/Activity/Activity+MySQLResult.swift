@@ -6,7 +6,7 @@ import Foundation
 
 public extension MySQLResultProtocol {
 
-    public func toActivities(pageSize: UInt = 0) -> [Activity] {
+    public func toActivities(pageSize: Int = 10) -> [Activity] {
 
         var activities = [Activity]()
 
