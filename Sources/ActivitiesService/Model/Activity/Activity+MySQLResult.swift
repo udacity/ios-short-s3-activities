@@ -6,7 +6,7 @@ import Foundation
 
 public extension MySQLResultProtocol {
 
-    public func toActivities() -> [Activity] {
+    public func toActivities(pageSize: Int = 10) -> [Activity] {
 
         var activities = [Activity]()
 
@@ -24,7 +24,7 @@ public extension MySQLResultProtocol {
 
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-            
+
             if let createdAtString = row["created_at"] as? String,
                let createdAt = dateFormatter.date(from: createdAtString) {
                    activity.createdAt = createdAt
@@ -36,6 +36,11 @@ public extension MySQLResultProtocol {
             }
 
             activities.append(activity)
+
+            // return collection limited by page size if specified
+            if pageSize > 0 && activities.count == Int(pageSize) {
+                break
+            }
         }
 
         return activities

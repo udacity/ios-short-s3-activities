@@ -182,6 +182,30 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         XCTAssertNil(activities)
     }
 
+    func testGetActivitiesWithSize1ReturnsCorrectData() throws {
+        let result = MockMySQLResult()
+        result.affectedRows = -1
+        result.results = [["id": 1234], ["id": 2345]]
+        connection!.executeMySQLResultReturn = result
+
+        let activities = try dataAccessor!.getActivities(pageSize: 1, pageNumber: 1)
+
+        XCTAssertEqual(1, activities!.count)
+        XCTAssertEqual(1234, activities![0].id)
+    }
+
+    func testGetActivitiesWithSize1AndPageOffsetReturnsCorrectData() throws {
+        let result = MockMySQLResult()
+        result.affectedRows = -1
+        result.results = [["id": 1234], ["id": 2345]]
+        connection!.executeMySQLResultReturn = result
+
+        let activities = try dataAccessor!.getActivities(pageSize: 1, pageNumber: 2)
+
+        XCTAssertEqual(1, activities!.count)
+        XCTAssertEqual(2345, activities![0].id)
+    }
+
 }
 
 #if os(Linux)
@@ -202,7 +226,9 @@ extension ActivityMySQLDataAccessorTests {
             ("testGetActivityWithIDReturnsNilOnFail", testGetActivityWithIDReturnsNilOnFail),
             ("testGetActivitiesCallsExecute", testGetActivitiesCallsExecute),
             ("testGetActivitiesReturnsActivitiesOnSuccess", testGetActivitiesReturnsActivitiesOnSuccess),
-            ("testGetActivitiesReturnsNilOnFail", testGetActivitiesReturnsNilOnFail)
+            ("testGetActivitiesReturnsNilOnFail", testGetActivitiesReturnsNilOnFail),
+            ("testGetActivitiesWithSize1ReturnsCorrectData", testGetActivitiesWithSize1ReturnsCorrectData),
+            ("testGetActivitiesWithSize1AndPageOffsetReturnsCorrectData", testGetActivitiesWithSize1AndPageOffsetReturnsCorrectData)
         ]
     }
 }

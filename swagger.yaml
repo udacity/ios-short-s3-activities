@@ -24,15 +24,19 @@ paths:
       description: Returns all activites.
       summary: Returns all activites.
       parameters:
-       - name: limit
-         in: query
-         description: Number of events returned. Limit is 50.
-         type: integer
-       - name: page
-         in: query
-         description: Page number.
-         type: integer      
-      responses:
+        - name: pageSize
+          in: query
+          description: Number of events returned. Limit is 50.
+          required: false
+          type: integer
+          format: int
+        - name: pageNumber
+          in: query
+          description: Starting index of page to return.
+          required: false
+          type: integer
+          format: int
+    responses:
         200:
           description: Successful response.
           schema:
@@ -57,7 +61,7 @@ paths:
           schema:
             $ref: '#/definitions/Message'
         304:
-          $ref: "#/responses/NotModified"            
+          $ref: "#/responses/NotModified"
         400:
           description: Bad request.
           schema:
@@ -74,7 +78,7 @@ paths:
           description: ID of activity to fetch
           required: true
           type: integer
-          format: int64
+          format: int
       responses:
         200:
           description: Successful response.
@@ -93,26 +97,26 @@ paths:
           description: ID of activity to fetch
           required: true
           type: integer
-          format: int64
+          format: int
         - name: activity
           in: body
           description: Data to update an existing activity.
           required: true
           schema:
-            $ref: '#/definitions/NewActivity'  
+            $ref: '#/definitions/NewActivity'
       responses:
         200:
           description: Activity updated.
           schema:
             $ref: '#/definitions/Message'
         304:
-          $ref: "#/responses/NotModified"            
+          $ref: "#/responses/NotModified"
         400:
           description: Bad request.
           schema:
             $ref: '#/definitions/Message'
         401:
-          $ref: "#/responses/Unauthorized"            
+          $ref: "#/responses/Unauthorized"
     delete:
       description: Deletes activity with ID.
       summary: Deletes activity with ID.
@@ -122,18 +126,18 @@ paths:
           description: ID of activity to delete
           required: true
           type: integer
-          format: int64
+          format: int
       responses:
         204:
           description: Activity deleted.
           schema:
             $ref: '#/definitions/Message'
         304:
-          $ref: "#/responses/NotModified"              
+          $ref: "#/responses/NotModified"
         400:
           description: Bad request.
           schema:
-            $ref: '#/definitions/Message'           
+            $ref: '#/definitions/Message'
         401:
           $ref: "#/responses/Unauthorized"
 
