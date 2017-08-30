@@ -2,7 +2,7 @@ swagger: '2.0'
 
 info:
   version: '1.0.0'
-  title: 'Activities'
+  title: 'Activities Microservice'
   description: 'Microservice for creating, retrieving, updating, and deleting activities.'
   contact:
     name: Jarrod Parkes
@@ -90,10 +90,6 @@ paths:
               items:
                 type: string
                 default: "3"
-            type:
-              type: string
-              description: Types of activities to filter.
-              default: "upcoming"
       responses:
         200:
           description: Successful response.
