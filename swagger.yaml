@@ -2,7 +2,7 @@ swagger: '2.0'
 
 info:
   version: '1.0.0'
-  title: 'Activities'
+  title: 'Activities Microservice'
   description: 'Microservice for creating, retrieving, updating, and deleting activities.'
   contact:
     name: Jarrod Parkes
@@ -21,22 +21,18 @@ produces:
 paths:
   /activities:
     get:
-      description: Returns all activites.
-      summary: Returns all activites.
+      description: List activities.
+      summary: List activities.
       parameters:
-        - name: pageSize
-          in: query
-          description: Number of events returned. Limit is 50.
-          required: false
-          type: integer
-          format: int
-        - name: pageNumber
-          in: query
-          description: Starting index of page to return.
-          required: false
-          type: integer
-          format: int
-    responses:
+       - name: page_size
+         in: query
+         description: Number of activities returned. Limit is 50.
+         type: integer
+       - name: page_number
+         in: query
+         description: Page number.
+         type: integer      
+      responses:
         200:
           description: Successful response.
           schema:
@@ -46,12 +42,12 @@ paths:
         401:
           $ref: "#/responses/Unauthorized"
     post:
-      description: Creates a new activity.
-      summary: Creates a new activity.
+      description: Create a new activity.
+      summary: Create a new activity.
       parameters:
         - name: activity
           in: body
-          description: Data for a new activity.
+          description: Data for new activity.
           required: true
           schema:
             $ref: '#/definitions/NewActivity'
@@ -61,24 +57,61 @@ paths:
           schema:
             $ref: '#/definitions/Message'
         304:
-          $ref: "#/responses/NotModified"
+          $ref: "#/responses/NotModified"            
         400:
           description: Bad request.
           schema:
             $ref: '#/definitions/Message'
         401:
           $ref: "#/responses/Unauthorized"
+      security:
+        - JWT: []  
+  /activities/search:
+    get:
+      description: List and filter activities.
+      summary: List and filter activities.
+      parameters:
+       - name: page_size
+         in: query
+         description: Number of activities returned. Limit is 50.
+         type: integer
+       - name: page_number
+         in: query
+         description: Page number.
+         type: integer
+       - name: filter
+         in: body
+         description: Properties for filtering search.
+         required: false
+         schema:
+           type: object
+           properties:
+            id:
+              type: array
+              description: IDs of activities to filter.
+              items:
+                type: string
+                default: "3"
+      responses:
+        200:
+          description: Successful response.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Activity'
+        401:
+          $ref: "#/responses/Unauthorized"          
   /activities/{id}:
     get:
-      description: Returns activity with ID.
-      summary: Returns activity with ID.
+      description: Get information about an activity.
+      summary: Get information about an activity.
       parameters:
         - name: id
           in: path
-          description: ID of activity to fetch
+          description: ID of activity to fetch.
           required: true
           type: integer
-          format: int
+          format: int64
       responses:
         200:
           description: Successful response.
@@ -89,57 +122,61 @@ paths:
         404:
           $ref: "#/responses/NotFound"
     put:
-      description: Updates an activity with ID.
-      summary: Updates an activity with ID.
+      description: Update an activity.
+      summary: Update an activity.
       parameters:
         - name: id
           in: path
-          description: ID of activity to fetch
+          description: ID of activity to fetch.
           required: true
           type: integer
-          format: int
+          format: int64
         - name: activity
           in: body
-          description: Data to update an existing activity.
+          description: Data to update activity.
           required: true
           schema:
-            $ref: '#/definitions/NewActivity'
+            $ref: '#/definitions/NewActivity'  
       responses:
         200:
           description: Activity updated.
           schema:
             $ref: '#/definitions/Message'
         304:
-          $ref: "#/responses/NotModified"
+          $ref: "#/responses/NotModified"            
         400:
           description: Bad request.
           schema:
             $ref: '#/definitions/Message'
         401:
-          $ref: "#/responses/Unauthorized"
+          $ref: "#/responses/Unauthorized"    
+      security:
+        - JWT: []  
     delete:
-      description: Deletes activity with ID.
-      summary: Deletes activity with ID.
+      description: Delete an activity.
+      summary: Delete an activity.
       parameters:
         - name: id
           in: path
-          description: ID of activity to delete
+          description: ID of activity to delete.
           required: true
           type: integer
-          format: int
+          format: int64
       responses:
         204:
           description: Activity deleted.
           schema:
             $ref: '#/definitions/Message'
         304:
-          $ref: "#/responses/NotModified"
+          $ref: "#/responses/NotModified"              
         400:
           description: Bad request.
           schema:
-            $ref: '#/definitions/Message'
+            $ref: '#/definitions/Message'           
         401:
           $ref: "#/responses/Unauthorized"
+      security:
+        - JWT: [] 
 
 responses:
   NoContent:
@@ -152,6 +189,13 @@ responses:
     description: The specified resource was not found.
   Unauthorized:
     description: Unauthorized.
+
+securityDefinitions:
+  JWT:
+    type: apiKey
+    description: A Base64-encoded JSON web token.
+    name: "Authorization: Bearer"
+    in: header
 
 definitions:
   Activity:
