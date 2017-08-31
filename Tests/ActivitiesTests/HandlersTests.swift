@@ -97,7 +97,7 @@ public class HandlersTests: XCTestCase {
         let activities = [ activity, activity2 ]
         mockDAO!.getActivityReturn = activities
 
-        request.parameters["pageSize"] = 1
+        request.parameters["page_size"] = 1
 
         // execute
         try handlers!.getActivities(request: routerRequest!, response: routerResponse!) {}

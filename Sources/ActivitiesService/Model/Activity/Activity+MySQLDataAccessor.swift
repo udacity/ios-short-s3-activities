@@ -61,7 +61,7 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
         let result = try execute(builder: selectQuery)
         result.seek(offset: cacluateOffset(pageSize: pageSize, pageNumber: pageNumber))
 
-        let activities = result.toActivities()
+        let activities = result.toActivities(pageSize: pageSize)
         return (activities.count == 0) ? nil : activities
     }
 

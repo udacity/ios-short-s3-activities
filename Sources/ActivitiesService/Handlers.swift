@@ -32,9 +32,9 @@ public class Handlers {
 
         let id = request.parameters["id"]
 
-        guard let pageSize = Int(request.queryParameters["pageSize"] ?? "10"), let pageNumber = Int(request.queryParameters["pageNumber"] ?? "1") else {
-            Log.error("could not initialize pageSize and pageNumber")
-            try response.send(json: JSON(["message": "could not initialize pageSize and pageNumber"]))
+        guard let pageSize = Int(request.queryParameters["page_size"] ?? "10"), let pageNumber = Int(request.queryParameters["page_number"] ?? "1") else {
+            Log.error("could not initialize page_size and page_number")
+            try response.send(json: JSON(["message": "could not initialize page_size and page_number"]))
                         .status(.internalServerError).end()
             return
         }
