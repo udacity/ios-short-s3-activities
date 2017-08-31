@@ -64,6 +64,8 @@ paths:
             $ref: '#/definitions/Message'
         401:
           $ref: "#/responses/Unauthorized"
+      security:
+        - JWT: []  
   /activities/search:
     get:
       description: List and filter activities.
@@ -147,7 +149,9 @@ paths:
           schema:
             $ref: '#/definitions/Message'
         401:
-          $ref: "#/responses/Unauthorized"            
+          $ref: "#/responses/Unauthorized"    
+      security:
+        - JWT: []  
     delete:
       description: Delete an activity.
       summary: Delete an activity.
@@ -171,6 +175,8 @@ paths:
             $ref: '#/definitions/Message'           
         401:
           $ref: "#/responses/Unauthorized"
+      security:
+        - JWT: [] 
 
 responses:
   NoContent:
@@ -183,6 +189,13 @@ responses:
     description: The specified resource was not found.
   Unauthorized:
     description: Unauthorized.
+
+securityDefinitions:
+  JWT:
+    type: apiKey
+    description: A Base64-encoded JSON web token.
+    name: "Authorization: Bearer"
+    in: header
 
 definitions:
   Activity:
