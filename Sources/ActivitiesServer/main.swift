@@ -40,6 +40,7 @@ router.options("/*", handler: handlers.getOptions)
 // GET
 router.get("/*", middleware: CheckRequestMiddleware(method: .get))
 router.get("/activities", handler: handlers.getActivities)
+router.get("/activities/search", handler: handlers.getActivities)
 router.get("/activities/:id", handler: handlers.getActivities)
 
 // POST

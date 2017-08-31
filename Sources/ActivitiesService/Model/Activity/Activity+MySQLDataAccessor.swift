@@ -6,7 +6,7 @@ public protocol ActivityMySQLDataAccessorProtocol {
     func createActivity(_ activity: Activity) throws -> Bool
     func updateActivity(_ activity: Activity) throws -> Bool
     func deleteActivity(withID id: String) throws -> Bool
-    func getActivities(withID id: String) throws -> [Activity]?
+    func getActivities(withIDs ids: [String], pageSize: Int, pageNumber: Int) throws -> [Activity]?
     func getActivities(pageSize: Int, pageNumber: Int) throws -> [Activity]?
 }
 
@@ -52,25 +52,26 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
         return result.affectedRows > 0
     }
 
-    public func getActivities(withID id: String) throws -> [Activity]? {
-        let select = MySQLQueryBuilder()
+    public func getActivities(withIDs ids: [String], pageSize: Int = 10, pageNumber: Int = 1) throws -> [Activity]? {
+        let selectQuery = MySQLQueryBuilder()
             .select(fields: ["id", "name", "emoji", "description", "genre",
             "min_participants", "max_participants", "created_at", "updated_at"], table: "activities")
-            .wheres(statement:"WHERE Id=?", parameters: id)
+            .wheres(statement: "id IN (?)", parameters: ids)
 
-        let result = try execute(builder: select)
+        let result = try execute(builder: selectQuery)
+        result.seek(offset: cacluateOffset(pageSize: pageSize, pageNumber: pageNumber))
+
         let activities = result.toActivities()
         return (activities.count == 0) ? nil : activities
     }
 
     public func getActivities(pageSize: Int = 10, pageNumber: Int = 1) throws -> [Activity]? {
-        let selectBuilder = MySQLQueryBuilder()
+        let selectQuery = MySQLQueryBuilder()
             .select(fields: ["id", "name", "emoji", "description", "genre",
             "min_participants", "max_participants", "created_at", "updated_at"], table: "activities")
 
-        let result = try execute(builder: selectBuilder)
-        let offset = pageNumber > 1 ? pageSize * (pageNumber - 1) : 0
-        result.seek(offset: Int64(offset))
+        let result = try execute(builder: selectQuery)
+        result.seek(offset: cacluateOffset(pageSize: pageSize, pageNumber: pageNumber))
 
         let activities = result.toActivities(pageSize: pageSize)
         return (activities.count == 0) ? nil : activities
@@ -83,5 +84,9 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
         defer { pool.releaseConnection(connection!) }
 
         return try connection!.execute(builder: builder)
+    }
+
+    func cacluateOffset(pageSize: Int, pageNumber: Int) -> Int64 {
+        return Int64(pageNumber > 1 ? pageSize * (pageNumber - 1) : 0)
     }
 }

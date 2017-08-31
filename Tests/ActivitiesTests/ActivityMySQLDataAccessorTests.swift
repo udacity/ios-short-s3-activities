@@ -121,10 +121,10 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        _ = try dataAccessor!.getActivities(withID: "1234")
+        _ = try dataAccessor!.getActivities(withIDs: ["1234"])
 
         let query = connection!.executeBuilderParams?.build()
-        let containsWhere = query!.contains("WHERE Id='1234'")
+        let containsWhere = query!.contains("id IN ('1234')")
         XCTAssertTrue(containsWhere, "query should have been executed with correct parameters: \(query!)")
     }
 
@@ -134,7 +134,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.results = [["id": 1234]]
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dataAccessor!.getActivities(withID: "1234")
+        let activities = try dataAccessor!.getActivities(withIDs: ["1234"])
 
         XCTAssertEqual(1234, activities![0].id)
     }
@@ -144,7 +144,7 @@ class ActivityMySQLDataAccessorTests: XCTestCase {
         result.affectedRows = 0
         connection!.executeMySQLResultReturn = result
 
-        let activities = try dataAccessor!.getActivities(withID: "1234")
+        let activities = try dataAccessor!.getActivities(withIDs: ["1234"])
 
         XCTAssertNil(activities)
     }

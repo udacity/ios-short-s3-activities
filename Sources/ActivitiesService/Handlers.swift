@@ -42,9 +42,14 @@ public class Handlers {
         var activities: [Activity]?
 
         if let id = id {
-            activities = try dataAccessor.getActivities(withID: id)
+            activities = try dataAccessor.getActivities(withIDs: [id], pageSize: pageSize, pageNumber: pageNumber)
         } else {
-            activities = try dataAccessor.getActivities(pageSize: pageSize, pageNumber: pageNumber)
+            if let body = request.body, case let .json(json) = body, let idFilter = json["id"].array {
+                let ids = idFilter.map({$0.stringValue})
+                activities = try dataAccessor.getActivities(withIDs: ids, pageSize: pageSize, pageNumber: pageNumber)
+            } else {
+                activities = try dataAccessor.getActivities(pageSize: pageSize, pageNumber: pageNumber)
+            }
         }
 
         if activities == nil {
