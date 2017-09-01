@@ -41,6 +41,8 @@ paths:
               $ref: '#/definitions/Activity'
         401:
           $ref: "#/responses/Unauthorized"
+      security:
+        - Public: []      
     post:
       description: Create a new activity.
       summary: Create a new activity.
@@ -101,6 +103,8 @@ paths:
               $ref: '#/definitions/Activity'
         401:
           $ref: "#/responses/Unauthorized"          
+      security:
+        - Public: []            
   /activities/{id}:
     get:
       description: Get information about an activity.
@@ -121,6 +125,8 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+      security:
+        - Public: []          
     put:
       description: Update an activity.
       summary: Update an activity.
@@ -191,6 +197,9 @@ responses:
     description: Unauthorized.
 
 securityDefinitions:
+  Public:
+    type: basic
+    description: A public endpoint. Only public data is returned. No username or password is required.
   JWT:
     type: apiKey
     description: A Base64-encoded JSON web token.
