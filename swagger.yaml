@@ -28,10 +28,12 @@ paths:
          in: query
          description: Number of activities returned. Limit is 50.
          type: integer
+         default: 10
        - name: page_number
          in: query
          description: Page number.
-         type: integer      
+         type: integer 
+         default: 1
       responses:
         200:
           description: Successful response.
@@ -77,10 +79,12 @@ paths:
          in: query
          description: Number of activities returned. Limit is 50.
          type: integer
+         default: 10
        - name: page_number
          in: query
          description: Page number.
          type: integer
+         default: 1
        - name: filter
          in: body
          description: Properties for filtering search.
