@@ -144,6 +144,7 @@ public class Handlers {
 
         if success {
             try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
+            return
         }
 
         try response.status(.notModified).end()
@@ -164,6 +165,7 @@ public class Handlers {
 
         if success {
             try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
+            return
         }
 
         try response.status(.notModified).end()
