@@ -66,8 +66,8 @@ public class Handlers {
     public func postActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         guard let body = request.body, case let .json(json) = body else {
-            Log.error("body contains invalid JSON")
-            try response.send(json: JSON(["message": "body is missing JSON or JSON is invalid"]))
+            Log.error("Cannot initialize request body. This endpoint expects the request body to be a valid JSON object.")
+            try response.send(json: JSON(["message": "Cannot initialize request body. This endpoint expects the request body to be a valid JSON object"]))
                         .status(.badRequest).end()
             return
         }
@@ -107,8 +107,8 @@ public class Handlers {
     public func putActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         guard let body = request.body, case let .json(json) = body else {
-            Log.error("body contains invalid JSON")
-            try response.send(json: JSON(["message": "body is missing JSON or JSON is invalid"]))
+            Log.error("Cannot initialize request body. This endpoint expects the request body to be a valid JSON object.")
+            try response.send(json: JSON(["message": "Cannot initialize request body. This endpoint expects the request body to be a valid JSON object"]))
                         .status(.badRequest).end()
             return
         }
