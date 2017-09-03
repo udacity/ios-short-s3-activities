@@ -85,8 +85,8 @@ public class Handlers {
             ["name", "emoji", "description", "genre", "minParticipants", "maxParticipants"])
 
         if missingParameters.count != 0 {
-            Log.error("Parameters missing \(missingParameters) in request body: \(missingParameters).")
-            try response.send(json: JSON(["message": "Parameters missing \(missingParameters) in request body: \(missingParameters)."]))
+            Log.error("Unable to initialize parameters from request body: \(missingParameters).")
+            try response.send(json: JSON(["message": "Unable to initialize parameters from request body: \(missingParameters)."]))
                         .status(.badRequest).end()
             return
         }
@@ -134,8 +134,8 @@ public class Handlers {
             ["name", "emoji", "description", "genre", "minParticipants", "maxParticipants"])
 
         if missingParameters.count != 0 {
-            Log.error("Parameters missing \(missingParameters) in request body: \(missingParameters).")
-            try response.send(json: JSON(["message": "Parameters missing \(missingParameters) in request body: \(missingParameters)."]))
+            Log.error("Unable to initialize parameters from request body: \(missingParameters).")
+            try response.send(json: JSON(["message": "Unable to initialize parameters from request body: \(missingParameters)."]))
                         .status(.badRequest).end()
             return
         }
