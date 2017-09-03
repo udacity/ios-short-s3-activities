@@ -30,17 +30,16 @@ public class Handlers {
 
     public func getActivities(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
-        let id = request.parameters["id"]
-
         guard let pageSize = Int(request.queryParameters["page_size"] ?? "10"), let pageNumber = Int(request.queryParameters["page_number"] ?? "1"),
             pageSize > 0, pageSize <= 50 else {
             Log.error("Cannot initialize query parameters: page_size, page_number. page_size must be (0, 50].")
-            try response.send(json: JSON(["error": "Cannot initialize query parameters: page_size, page_number. page_size must be (0, 50]."]))
+            try response.send(json: JSON(["message": "Cannot initialize query parameters: page_size, page_number. page_size must be (0, 50]."]))
                         .status(.badRequest).end()
             return
         }
 
         var activities: [Activity]?
+        let id = request.parameters["id"]
 
         if let id = id {
             activities = try dataAccessor.getActivities(withIDs: [id], pageSize: pageSize, pageNumber: pageNumber)
@@ -86,8 +85,8 @@ public class Handlers {
             ["name", "emoji", "description", "genre", "minParticipants", "maxParticipants"])
 
         if missingParameters.count != 0 {
-            Log.error("parameters missing \(missingParameters)")
-            try response.send(json: JSON(["message": "parameters missing \(missingParameters)"]))
+            Log.error("Parameters missing \(missingParameters) in request body: \(missingParameters).")
+            try response.send(json: JSON(["message": "Parameters missing \(missingParameters) in request body: \(missingParameters)."]))
                         .status(.badRequest).end()
             return
         }
@@ -95,7 +94,7 @@ public class Handlers {
         let success = try dataAccessor.createActivity(newActivity)
 
         if success {
-            try response.send(json: JSON(["message": "activity created"])).status(.created).end()
+            try response.send(json: JSON(["message": "Activity created."])).status(.created).end()
             return
         }
 
@@ -114,8 +113,8 @@ public class Handlers {
         }
 
         guard let id = request.parameters["id"] else {
-            Log.error("id (path parameter) missing")
-            try response.send(json: JSON(["message": "id (path parameter) missing"]))
+            Log.error("Cannot initialize path parameter: id.")
+            try response.send(json: JSON(["message": "Cannot initialize path parameter: id."]))
                         .status(.badRequest).end()
             return
         }
@@ -135,8 +134,8 @@ public class Handlers {
             ["name", "emoji", "description", "genre", "minParticipants", "maxParticipants"])
 
         if missingParameters.count != 0 {
-            Log.error("parameters missing \(missingParameters)")
-            try response.send(json: JSON(["message": "parameters missing \(missingParameters)"]))
+            Log.error("Parameters missing \(missingParameters) in request body: \(missingParameters).")
+            try response.send(json: JSON(["message": "Parameters missing \(missingParameters) in request body: \(missingParameters)."]))
                         .status(.badRequest).end()
             return
         }
@@ -144,7 +143,7 @@ public class Handlers {
         let success = try dataAccessor.updateActivity(updateActivity)
 
         if success {
-            try response.send(json: JSON(["message": "activity updated"])).status(.OK).end()
+            try response.send(json: JSON(["message": "Activity updated."])).status(.OK).end()
             return
         }
 
@@ -156,8 +155,8 @@ public class Handlers {
     public func deleteActivity(request: RouterRequest, response: RouterResponse, next: @escaping () -> Void) throws {
 
         guard let id = request.parameters["id"] else {
-            Log.error("id (path parameter) missing")
-            try response.send(json: JSON(["message": "id (path parameter) missing"]))
+            Log.error("Cannot initialize path parameter: id.")
+            try response.send(json: JSON(["message": "Cannot initialize path parameter: id."]))
                         .status(.badRequest).end()
             return
         }
@@ -165,7 +164,7 @@ public class Handlers {
         let success = try dataAccessor.deleteActivity(withID: id)
 
         if success {
-            try response.send(json: JSON(["message": "resource deleted"])).status(.noContent).end()
+            try response.send(json: JSON(["message": "Activity deleted."])).status(.noContent).end()
             return
         }
 
