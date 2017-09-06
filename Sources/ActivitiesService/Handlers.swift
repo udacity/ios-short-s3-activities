@@ -66,7 +66,7 @@ public class Handlers {
 
         guard let body = request.body, case let .json(json) = body else {
             Log.error("Cannot initialize request body. This endpoint expects the request body to be a valid JSON object.")
-            try response.send(json: JSON(["message": "Cannot initialize request body. This endpoint expects the request body to be a valid JSON object"]))
+            try response.send(json: JSON(["message": "Cannot initialize request body. This endpoint expects the request body to be a valid JSON object."]))
                         .status(.badRequest).end()
             return
         }
@@ -107,7 +107,7 @@ public class Handlers {
 
         guard let body = request.body, case let .json(json) = body else {
             Log.error("Cannot initialize request body. This endpoint expects the request body to be a valid JSON object.")
-            try response.send(json: JSON(["message": "Cannot initialize request body. This endpoint expects the request body to be a valid JSON object"]))
+            try response.send(json: JSON(["message": "Cannot initialize request body. This endpoint expects the request body to be a valid JSON object."]))
                         .status(.badRequest).end()
             return
         }

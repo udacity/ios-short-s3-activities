@@ -37,7 +37,7 @@ public extension MySQLResultProtocol {
 
             activities.append(activity)
 
-            // return collection limited by page size if specified
+            // Return collection limited by page size if specified
             if pageSize > 0 && activities.count == Int(pageSize) {
                 break
             }
