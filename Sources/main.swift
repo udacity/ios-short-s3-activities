@@ -2,7 +2,6 @@ import Kitura
 import LoggerAPI
 import HeliumLogger
 import Foundation
-import ActivitiesService
 import MySQL
 
 // Disable stdout buffering (so log will appear)
