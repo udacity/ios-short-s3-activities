@@ -1,28 +1,32 @@
-// swift-tools-version:3.1
+// swift-tools-version:4.0
 import Foundation
 import PackageDescription
 
 let package = Package(
     name: "ActivitiesService",
 
-    targets: [
-        Target(name: "ActivitiesService"),
-        Target(name: "ActivitiesServer", dependencies: ["ActivitiesService"])
+    products: [
+        .executable(
+            name: "ActivitiesServer",
+            targets: ["ActivitiesServer"]
+        )
     ],
 
     dependencies: [
-        .Package(url: "https://github.com/IBM-Swift/Kitura.git", majorVersion: 1, minor: 7),
-        .Package(url: "https://github.com/IBM-Swift/HeliumLogger.git", majorVersion: 1, minor: 7),
-        .Package(url: "https://github.com/nicholasjackson/swift-mysql.git", majorVersion: 1, minor: 7)
-    ]
-)
+        .package(url: "https://github.com/IBM-Swift/Kitura.git", from: "1.7.9"),
+        .package(url: "https://github.com/IBM-Swift/HeliumLogger.git", from: "1.7.0"),
+        .package(url: "https://github.com/nicholasjackson/swift-mysql.git", from: "1.9.0"),
 
-if ProcessInfo.processInfo.environment["TEST"] != nil {
-    package.targets.append(Target(name: "ActivitiesTests", dependencies: ["ActivitiesService"]))
-    package.targets.append(Target(name: "FunctionalTests"))
-    package.dependencies.append(.Package(
-        url: "https://github.com/nicholasjackson/kitura-http-test.git",
-        majorVersion: 0,
-        minor: 2)
-    )
-}
+        // Test imports
+        .package(url: "https://github.com/nicholasjackson/kitura-http-test", from: "0.2.0")
+    ],
+
+    targets: [
+        .target(name: "ActivitiesService", dependencies: ["Kitura", "HeliumLogger", "MySQL"]),
+        .target(name: "ActivitiesServer", dependencies: ["ActivitiesService"]),
+        .testTarget(name: "ActivitiesTests", dependencies: ["ActivitiesService", "KituraHTTPTest"]),
+        .testTarget(name: "FunctionalTests", dependencies: ["ActivitiesServer"])
+    ],
+
+    swiftLanguageVersions: [3]
+)

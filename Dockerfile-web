@@ -1,4 +1,4 @@
-FROM ibmcom/kitura-ubuntu:latest
+FROM ibmcom/swift-ubuntu:4.0
 
 MAINTAINER Jarrod Parkes <jarrod@udacity.com>
 
