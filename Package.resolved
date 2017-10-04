@@ -11,15 +11,6 @@
         }
       },
       {
-        "package": "CEpoll",
-        "repositoryURL": "https://github.com/IBM-Swift/CEpoll.git",
-        "state": {
-          "branch": null,
-          "revision": "7b65f0adfe5a1f36fc16b16760f5f99cfd3a4e1a",
-          "version": "0.1.1"
-        }
-      },
-      {
         "package": "HeliumLogger",
         "repositoryURL": "https://github.com/IBM-Swift/HeliumLogger.git",
         "state": {
@@ -78,17 +69,8 @@
         "repositoryURL": "https://github.com/nicholasjackson/swift-mysql.git",
         "state": {
           "branch": null,
-          "revision": "1fe61fb7cbb4ebca19ee3e8c1234af2baab74a70",
-          "version": "1.9.0"
-        }
-      },
-      {
-        "package": "OpenSSL",
-        "repositoryURL": "https://github.com/IBM-Swift/OpenSSL.git",
-        "state": {
-          "branch": null,
-          "revision": "95c405c18a071a1c13616e984ba1b3c6091ca6ca",
-          "version": "0.3.7"
+          "revision": "c5c378d33f67788d11bba8e226c00732a45bb949",
+          "version": "1.9.1"
         }
       },
       {
@@ -98,15 +80,6 @@
           "branch": null,
           "revision": "b4cac06a7860b7016ee968563812e9af3afe28e3",
           "version": "0.12.57"
-        }
-      },
-      {
-        "package": "Signals",
-        "repositoryURL": "https://github.com/IBM-Swift/BlueSignals.git",
-        "state": {
-          "branch": null,
-          "revision": "0fab5a9f166e96f17bb9646dc56cd22a6f3c3757",
-          "version": "0.9.50"
         }
       },
       {
@@ -132,8 +105,8 @@
         "repositoryURL": "https://github.com/nicholasjackson/swift-libmysql",
         "state": {
           "branch": null,
-          "revision": "7354cab9c38aa016a8bb07a9678f64878b4d5752",
-          "version": "0.1.0"
+          "revision": "e9cf8966c6782a42835333293486e7563a7106bf",
+          "version": "0.3.0"
         }
       }
     ]
