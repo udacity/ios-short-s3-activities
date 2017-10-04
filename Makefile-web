@@ -9,7 +9,10 @@ WEB_DOCKER_REPO=$(WEB_DOCKER_ORGANIZATION)/$(WEB_CONTAINER_NAME)
 VERSION ?= $(shell git rev-parse --short HEAD)
 
 # testing
-TEST_COMMAND=TEST=true swift test -Xlinker -L/usr/local/lib
+TEST_COMMAND=swift test -Xlinker -L/usr/local/lib
+
+# releasing
+RELEASE_COMMAND=swift build -Xlinker -L/usr/local/lib --static-swift-stdlib --product ActivitiesServer -c release
 
 # =============================
 # Web (Microservice) Container
@@ -70,6 +73,23 @@ web_release_build:
 	docker tag $(WEB_CONTAINER_NAME) $(WEB_DOCKER_REPO):$(VERSION)
 	docker tag $(WEB_CONTAINER_NAME) $(WEB_DOCKER_REPO):latest
 
+web_release_build_docker:
+
+	docker run -d \
+		-v $(shell pwd):/src \
+		--name web_release \
+		-w /src \
+		$(WEB_IMAGE) tail -f /dev/null
+	
+	$(call execute_docker_build, web_release, ${RELEASE_COMMAND})
+	$(call execute_docker_build, web_release, cp /usr/lib/swift/linux/*.so ./linux_shared)
+	docker stop web_release
+	docker rm web_release
+	
+	docker build -t $(WEB_CONTAINER_NAME) -f Dockerfile-prod .
+	docker tag $(WEB_CONTAINER_NAME) $(WEB_DOCKER_REPO):$(VERSION)
+	docker tag $(WEB_CONTAINER_NAME) $(WEB_DOCKER_REPO):latest
+
 define execute_docker_reset_packages
 	trap 'docker exec -it $(1) \
 			/bin/bash -c "swift package reset"' \
@@ -80,5 +100,12 @@ endef
 define execute_docker_test
 	trap 'docker exec -it $(1) \
 			/bin/bash -c "$(TEST_COMMAND) --filter $(2)"' \
+		ERR EXIT
+endef
+
+# Make function to exexute swift build in docker
+define execute_docker_build
+	trap 'docker exec -it $(1) \
+			/bin/bash -c "$(2)"' \
 		ERR EXIT
 endef
