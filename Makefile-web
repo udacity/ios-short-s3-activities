@@ -58,11 +58,13 @@ web_functional_test_docker:
 	docker run --rm -v $(shell pwd):/src \
 	-w /src $(WEB_IMAGE) /bin/bash -c 'TEST=true swift test --filter FunctionalTests'
 
+# ONLY RUN ON LINUX BASED SYSTEMS
 web_release_build:
-	swift build -c release \
-		-Xlinker -L/usr/lib/swift/linux \
+	swift build \
 		-Xlinker -L/usr/local/lib \
-		-Xswiftc -static-stdlib
+		--static-swift-stdlib \
+		--product ActivitiesServer \
+		-c release
 	cp /usr/lib/swift/linux/*.so ./linux_shared
 	docker build -t $(WEB_CONTAINER_NAME) -f Dockerfile-prod .
 	docker tag $(WEB_CONTAINER_NAME) $(WEB_DOCKER_REPO):$(VERSION)
