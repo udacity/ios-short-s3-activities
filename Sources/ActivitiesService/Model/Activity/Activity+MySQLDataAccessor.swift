@@ -48,7 +48,7 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
     public func getExample(withID id: String) throws -> [Activity]? {
         let select = MySQLQueryBuilder()
                         .select(fields: ["name"], table: "activities")
-                        .wheres(statement:"WHERE Id=?", parameters: id)
+                        .wheres(statement:"Id=?", parameters: id)
 
         let result = try execute(builder: select)
         let activities = result.toActivities()
