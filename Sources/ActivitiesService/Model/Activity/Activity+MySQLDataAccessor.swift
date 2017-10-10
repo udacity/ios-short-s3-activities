@@ -37,7 +37,7 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
     public func updateActivity(_ activity: Activity) throws -> Bool {
         let updateQuery = MySQLQueryBuilder()
                 .update(data: activity.toMySQLRow(), table: "activities")
-                .wheres(statement: "WHERE Id=?", parameters: "\(activity.id!)")
+                .wheres(statement: "Id=?", parameters: "\(activity.id!)")
 
         let result = try execute(builder: updateQuery)
         return result.affectedRows > 0
@@ -46,7 +46,7 @@ public class ActivityMySQLDataAccessor: ActivityMySQLDataAccessorProtocol {
     public func deleteActivity(withID id: String) throws -> Bool {
         let deleteQuery = MySQLQueryBuilder()
                 .delete(fromTable: "activities")
-                .wheres(statement: "WHERE Id=?", parameters: "\(id)")
+                .wheres(statement: "Id=?", parameters: "\(id)")
 
         let result = try execute(builder: deleteQuery)
         return result.affectedRows > 0
